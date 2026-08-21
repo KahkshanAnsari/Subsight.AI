@@ -1,142 +1,646 @@
-# SubSight AI — Subscription Intelligence Platform
+Copy-paste this **entire block** directly into `README.md`:
 
-> **"Understand your subscriptions. Cut the waste."**  
-> A production-grade B.Tech AI Capstone Project built using Python, Streamlit, Pandas, Plotly, and Google Gemini AI.
+````markdown
+# SubSight AI
 
----
+> **Understand your subscriptions. Cut the waste.**
 
-## 📌 Executive Summary
+SubSight AI is an AI-powered subscription intelligence platform that helps users track recurring expenses, analyze subscription spending, identify potential savings, and receive personalized financial recommendations powered by Google Gemini.
 
-**SubSight AI** is a modern SaaS subscription optimization platform. It allows users to track recurring monthly/annual expenses, detect redundant or overlapping services (e.g. streaming, productivity tools), simulate cancellation scenarios, and receive structured AI financial audits powered by the Google GenAI SDK (`google-genai`).
+Built as a **B.Tech AI Capstone Project** using Python, Streamlit, Pandas, Plotly, and Google Gemini.
 
----
+<p align="center">
 
-## 🎯 Capstone Evaluation Rubric Alignment (100 Points)
+[![Live App](https://img.shields.io/badge/Live%20App-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/KahkshanAnsari/Subsight.AI)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-App-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
 
-| Rubric Criterion | Score | Key Features & Implementation |
-| :--- | :---: | :--- |
-| **1. Technical Architecture** | **25/25** | Clean modular architecture (`components/`, `services/`, `utils/`), zero global state pollution, safe `st.session_state` persistence. |
-| **2. AI Integration & Prompting** | **20/20** | Direct integration with `google-genai` SDK using `gemini-2.5-flash`, dynamic context builder, strict financial analyst prompt engineering. |
-| **3. UI/UX & Data Visualization** | **20/20** | Custom light-theme fintech palette (`#F7F8FA` background, `#172554` primary navy, `#2563EB` blue), Plotly charts, `st.data_editor` CRUD, `st.metric` deltas. |
-| **4. Deployment & Cloud Engineering** | **15/15** | Streamlit Cloud deployment readiness, `.streamlit/config.toml` theme lock, minimal standard `requirements.txt`. |
-| **5. Open-Source GitHub Branding** | **10/10** | Comprehensive documentation, Mermaid diagrams, clean license, environment configuration guides. |
-| **6. System Design & Documentation** | **10/10** | End-to-end data processing pipelines, graceful error handling, defensive price/date validators. |
+</p>
 
 ---
 
-## 🏗️ System Architecture & Data Flow
+## 🌐 Live Application
+
+### [Launch SubSight AI →](https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/)
+
+**Source Code:**  
+[GitHub Repository →](https://github.com/KahkshanAnsari/Subsight.AI)
+
+---
+
+## 📌 Overview
+
+Digital subscriptions are easy to accumulate and surprisingly difficult to monitor.
+
+**SubSight AI** provides a centralized dashboard for understanding recurring subscription expenses and making better financial decisions about what to keep, review, or cancel.
+
+The platform combines:
+
+- Subscription management
+- Financial analytics
+- Interactive data visualization
+- Savings simulation
+- AI-powered subscription auditing
+- Personalized recommendations
+
+The application is designed around the official **MirAI B.Tech AI Capstone evaluation framework**.
+
+---
+
+# ✨ Key Features
+
+## 📊 Financial Dashboard
+
+Get an instant overview of your complete subscription portfolio.
+
+- Total monthly spending
+- Projected annual spending
+- Active subscription count
+- Potential savings
+- Category-wise spending
+- Upcoming renewal alerts
+- Interactive financial charts
+- AI-powered portfolio snapshot
+
+---
+
+## 💳 Subscription Management
+
+Manage recurring subscriptions from a single interface.
+
+- Add subscriptions
+- Edit subscription details
+- Delete subscriptions
+- Search subscriptions
+- Filter by category
+- Track billing cycles
+- Calculate monthly equivalents
+- Calculate annual costs
+- Export subscription data
+- Interactive `st.data_editor`
+
+Subscription data is maintained using Streamlit session state during the active application session.
+
+---
+
+## 🤖 AI Subscription Audit
+
+SubSight AI uses Google Gemini to analyze the user's actual subscription portfolio.
+
+The AI evaluates:
+
+- Overall subscription spending
+- High-cost services
+- Potentially redundant subscriptions
+- Category concentration
+- Savings opportunities
+- Keep / Review / Cancel recommendations
+- Potential alternatives
+- Financial optimization opportunities
+
+The AI receives structured, user-specific context instead of functioning as a generic chatbot.
+
+---
+
+## 💰 Savings Simulator
+
+Explore hypothetical cancellation scenarios before making a decision.
+
+Users can:
+
+- Select subscriptions to cancel
+- Compare current vs optimized spending
+- Calculate monthly savings
+- Calculate annual savings
+- Visualize financial impact
+- Generate AI-assisted scenario analysis
+
+---
+
+## 📈 Portfolio Insights
+
+Understand where recurring spending is going.
+
+Visualizations include:
+
+- Category spending distribution
+- Subscription cost comparisons
+- Billing-cycle analysis
+- Top recurring expenses
+- Spending trends
+- Renewal insights
+
+Charts are generated from the application's subscription dataset using Plotly.
+
+---
+
+## 🧪 Demo Data
+
+SubSight AI includes a realistic demo dataset for quickly exploring the application.
+
+Example services include:
+
+- Netflix
+- Spotify
+- YouTube Premium
+- Amazon Prime
+- Canva
+- Google One
+- Notion
+- Adobe Creative Cloud
+
+The demo dataset allows evaluators to explore the application's analytics and AI features without manually entering subscriptions.
+
+---
+
+# 🏗️ System Architecture
 
 ```mermaid
 graph TD
-    User([User / Browser]) <--> StreamlitUI[Streamlit UI Layer - app.py & components/]
-    StreamlitUI <--> SessionState[Streamlit session_state]
-    SessionState <--> AnalyticsEngine[Analytics & Calculation Engine - services/ & utils/]
-    AnalyticsEngine <--> DataModel[Pandas DataFrame Subscriptions Data]
-    StreamlitUI <--> GeminiService[Gemini AI Service - services/gemini_service.py]
-    GeminiService <--> GoogleGenAI[Google GenAI API - google-genai SDK]
-    AnalyticsEngine --> PlotlyCharts[Plotly Visualizations - components/charts.py]
-```
 
-### Data Pipeline Sequence
-1. **User Action / Form Input**: Subscriptions added via `st.form` or modified directly in `st.data_editor`.
-2. **Sanitization & Validation**: `utils/validators.py` verifies positive price bounds, standard YYYY-MM-DD dates, and assigns hex IDs.
-3. **Financial Enrichment**: `utils/calculations.py` computes monthly equivalent costs (Yearly/12, Quarterly/3) and annual projections.
-4. **Context Construction**: `services/gemini_service.py` builds structured user context payloads containing active subscriptions, monthly totals, category shares, and upcoming renewals.
-5. **AI Inference**: Invokes `google-genai` SDK (`gemini-2.5-flash`) with system instructions enforcing strict factual reasoning from actual user data.
-6. **Visualization**: Rendered via interactive Plotly charts, metrics deltas, and downloadable Markdown reports.
+    User([User / Browser])
 
----
+    User <--> UI[Streamlit UI]
 
-## 💻 Tech Stack
+    UI <--> State[st.session_state]
 
-- **Core**: Python 3.11+
-- **Frontend Framework**: Streamlit
-- **Data Engineering**: Pandas
-- **Visualization**: Plotly Express & Plotly Graph Objects
-- **AI Engine**: Google GenAI SDK (`google-genai`) — Gemini 2.5 Flash / Gemini 1.5 Flash
-- **State Management**: Streamlit `session_state`
+    State --> Data[Pandas DataFrame]
+
+    Data --> Validation[Validation & Sanitization]
+
+    Validation --> Analytics[Analytics & Calculation Engine]
+
+    Analytics --> Charts[Plotly Visualizations]
+
+    UI --> GeminiService[Gemini AI Service]
+
+    GeminiService --> Gemini[Google Gemini API]
+
+    Gemini --> Insights[AI Audit & Recommendations]
+
+    Insights --> UI
+````
 
 ---
 
-## 📁 Repository Structure
+# 🔄 Data Flow
 
+```text
+User Input
+    ↓
+Streamlit Form / Data Editor
+    ↓
+Validation & Sanitization
+    ↓
+Session State
+    ↓
+Pandas DataFrame
+    ↓
+Financial Calculations
+    ↓
+Analytics & Visualization
+    ↓
+Gemini AI Context Builder
+    ↓
+Google Gemini API
+    ↓
+AI Audit & Recommendations
+    ↓
+User Dashboard
 ```
-Subsight_AI/
-├── app.py                      # Main Streamlit application entry point & router
-├── requirements.txt            # Minimal production dependency manifest
-├── README.md                   # System documentation & evaluation guide
-├── .gitignore                  # Git ignore rules for secrets & cache
+
+### Processing Flow
+
+1. User enters subscription information.
+2. Input is validated and sanitized.
+3. Subscription data is maintained using `st.session_state`.
+4. Pandas processes the subscription dataset.
+5. Monthly and annual costs are calculated.
+6. Analytics modules generate spending insights.
+7. Plotly renders interactive visualizations.
+8. Gemini receives structured, user-specific context.
+9. AI generates subscription recommendations.
+10. Results are presented through the dashboard.
+
+---
+
+# 🧠 AI Integration
+
+SubSight AI integrates Google's Gemini API through the `google-genai` SDK.
+
+The AI engine is specifically designed for subscription analysis rather than generic conversation.
+
+### Prompt Engineering
+
+The AI integration uses:
+
+* System-level instructions
+* Dynamic user context
+* Python f-strings
+* Structured financial data
+* Explicit reasoning constraints
+* Recommendation prioritization
+* Data-grounded responses
+
+The model is instructed to analyze the information supplied by the application and avoid inventing unsupported subscription prices, usage information, or savings.
+
+---
+
+# 🛠️ Technology Stack
+
+| Technology     | Purpose                                |
+| -------------- | -------------------------------------- |
+| Python 3.11+   | Core application logic                 |
+| Streamlit      | Web application framework              |
+| Pandas         | Data processing                        |
+| Plotly         | Interactive data visualization         |
+| Google Gemini  | AI analysis and recommendations        |
+| `google-genai` | Gemini API integration                 |
+| Git            | Version control                        |
+| GitHub         | Source control and open-source hosting |
+
+---
+
+# 📁 Project Structure
+
+```text
+Subsight.AI/
+│
+├── app.py
+├── requirements.txt
+├── README.md
+├── LICENSE
+├── .gitignore
+│
 ├── .streamlit/
-│   └── config.toml             # Streamlit light theme styling & config
+│   └── config.toml
+│
 ├── components/
-│   ├── sidebar.py              # Navigation, API key status, demo data controls
-│   ├── cards.py                # Metric cards, AI snapshot, renewal alerts
-│   ├── charts.py               # Plotly category donuts, trend bars, scenario charts
-│   └── tables.py               # Dashboard summary & st.data_editor table
+│   ├── sidebar.py
+│   ├── cards.py
+│   ├── charts.py
+│   └── tables.py
+│
 ├── services/
-│   ├── gemini_service.py       # Google GenAI API client & prompt builder
-│   └── analytics.py            # Category aggregations & upcoming renewal checks
+│   ├── gemini_service.py
+│   └── analytics.py
+│
 ├── utils/
-│   ├── calculations.py         # Currency & monthly equivalent financial math
-│   └── validators.py           # Data schema sanitizers & price/date checkers
+│   ├── calculations.py
+│   ├── validators.py
+│   └── config.py
+│
 └── assets/
-    └── logo.svg                # Vector mark brand logo
+    └── logo.svg
 ```
 
 ---
 
-## 🚀 Local Installation & Running Guide
+# 🚀 Local Installation
 
-### 1. Prerequisites
-Ensure Python 3.11+ is installed on your machine.
+## Prerequisites
 
-### 2. Clone Repository & Install Dependencies
+Make sure the following are installed:
+
+* Python 3.11 or newer
+* Git
+* Google Gemini API key
+
+---
+
+## 1. Clone the Repository
+
 ```bash
-git clone https://github.com/your-username/Subsight_AI.git
-cd Subsight_AI
+git clone https://github.com/KahkshanAnsari/Subsight.AI.git
+cd Subsight.AI
+```
+
+---
+
+## 2. Install Dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-### 3. Environment / API Key Configuration
-Create a `.streamlit/secrets.toml` file or set an environment variable for Gemini API:
+---
+
+## 3. Configure Gemini API
+
+Create the following file:
+
+```text
+.streamlit/secrets.toml
+```
+
+Add:
 
 ```toml
-# .streamlit/secrets.toml
-GEMINI_API_KEY = "your_actual_gemini_api_key_here"
+GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
 ```
 
-*Note: You can also enter your API Key directly in the application sidebar UI at runtime!*
+> **Important:** Never commit `secrets.toml`, `.env` files, or API keys to GitHub.
 
-### 4. Run the Streamlit Application
+---
+
+## 4. Run the Application
+
 ```bash
-streamlit run app.py
+python -m streamlit run app.py
 ```
 
-The application will launch automatically in your web browser at `http://localhost:8501`.
+The application will be available at:
+
+```text
+http://localhost:8501
+```
 
 ---
 
-## 📊 Application Features Overview
+# ☁️ Deployment
 
-1. **Dashboard Overview**: Top 4 SaaS KPI cards with deltas, monthly vs annual spend switch, category share donut chart, upcoming renewal alerts within 30 days, and AI snapshot card.
-2. **Manage Subscriptions**: Full CRUD operations powered by `st.form` and live interactive `st.data_editor`. Search by name, filter by category or status, and export to CSV.
-3. **AI Subscription Audit**: One-click intelligent portfolio audit powered by Gemini AI. Provides overall assessment, overlap analysis, top savings opportunities, keep/review/cancel recommendations, and downloadable markdown reports.
-4. **Savings Simulator**: Checkbox cancellation simulator with real-time financial recalculations, before/after Plotly visualization, and AI scenario trade-off evaluations.
-5. **Portfolio Analytics**: Deep-dive into expense distribution, top 5 most expensive subscriptions, and cost split by billing cycle.
-6. **Demo Data Integration**: One-click realistic sample data loader featuring common Indian & global services (Netflix, Spotify, YouTube Premium, Amazon Prime, Canva, Google One, Notion, Adobe Creative Cloud).
+SubSight AI is deployed using **Streamlit Community Cloud**.
+
+### Deployment Configuration
+
+| Setting      | Value                        |
+| ------------ | ---------------------------- |
+| Repository   | `KahkshanAnsari/Subsight.AI` |
+| Branch       | `main`                       |
+| Main File    | `app.py`                     |
+| Dependencies | `requirements.txt`           |
+| Platform     | Streamlit Community Cloud    |
+
+### Live Deployment
+
+**[Launch SubSight AI →](https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/)**
 
 ---
 
-## ☁️ Deployment Guide (Streamlit Community Cloud)
+# 🔐 Security & Secrets
 
-1. Push code to GitHub repository.
-2. Log into [Streamlit Community Cloud](https://share.streamlit.io/).
-3. Connect your repository and set `app.py` as the main file path.
-4. Add your `GEMINI_API_KEY` under **App Settings -> Secrets**.
-5. Deploy!
+API credentials are not stored directly in the source code.
+
+The application uses Streamlit secrets for deployment configuration.
+
+Sensitive files such as:
+
+```text
+.streamlit/secrets.toml
+.env
+```
+
+are excluded from version control.
+
+For Streamlit Community Cloud, the Gemini API key is configured through the application's **Secrets** settings.
 
 ---
 
-## 📄 License
+# 📋 Capstone Evaluation Framework
 
-Distributed under the MIT License. See `LICENSE` for more information.
+The project is developed according to the official **MirAI B.Tech AI Capstone evaluation framework**.
+
+| Evaluation Category                 | Maximum Points |
+| ----------------------------------- | -------------: |
+| Technical Architecture              |             25 |
+| AI Integration & Prompt Engineering |             20 |
+| UI/UX & Data Visualization          |             20 |
+| Deployment & Cloud Engineering      |             15 |
+| Open-Source GitHub Branding         |             10 |
+| System Design & Documentation       |             10 |
+| **Total**                           |        **100** |
+
+### 1. Technical Architecture — 25 Points
+
+Implemented concepts include:
+
+* `st.session_state`
+* `st.form`
+* Pandas DataFrames
+* Modular Python architecture
+* Input validation
+* Data sanitization
+* Error handling
+
+### 2. AI Integration & Prompt Engineering — 20 Points
+
+Implemented concepts include:
+
+* Google Gemini API
+* System instructions
+* Dynamic context construction
+* f-string based prompts
+* Data-grounded recommendations
+* Specialized subscription analysis
+
+### 3. UI/UX & Data Visualization — 20 Points
+
+Implemented concepts include:
+
+* Professional light-theme interface
+* KPI metric cards
+* Dynamic metric deltas
+* Column-based layouts
+* Expanders
+* Interactive data editor
+* Plotly visualizations
+* Search and filtering
+* Responsive application states
+
+### 4. Deployment & Cloud Engineering — 15 Points
+
+Implemented concepts include:
+
+* Streamlit Community Cloud deployment
+* GitHub-based source deployment
+* `requirements.txt`
+* Streamlit configuration
+* Secure secrets management
+
+### 5. Open-Source Branding — 10 Points
+
+The repository includes:
+
+* Professional README
+* Architecture documentation
+* Setup instructions
+* Deployment instructions
+* Technology documentation
+* Live application link
+* GitHub repository
+
+### 6. System Design & Documentation — 10 Points
+
+Documentation covers:
+
+* System architecture
+* Data flow
+* AI integration strategy
+* Application modules
+* Data validation
+* Analytics pipeline
+* Deployment architecture
+
+> **Note:** The point values above represent the official evaluation weightage. Final scores are determined by the evaluator.
+
+---
+
+# 🧩 Core Modules
+
+### `app.py`
+
+Main Streamlit application entry point and page routing.
+
+### `components/`
+
+Contains reusable UI components:
+
+* Sidebar
+* Metric cards
+* Charts
+* Tables
+* Navigation elements
+
+### `services/`
+
+Contains application services:
+
+* Gemini AI integration
+* Analytics processing
+* AI prompt construction
+
+### `utils/`
+
+Contains reusable utilities:
+
+* Financial calculations
+* Data validation
+* Configuration
+* Data sanitization
+
+---
+
+# 📊 Financial Calculations
+
+SubSight AI normalizes subscription costs across different billing cycles.
+
+Examples:
+
+```text
+Monthly subscription
+→ Monthly cost = Price
+
+Quarterly subscription
+→ Monthly equivalent = Price / 3
+
+Yearly subscription
+→ Monthly equivalent = Price / 12
+```
+
+Annual projections are calculated from normalized monthly spending.
+
+This allows subscriptions with different billing cycles to be compared consistently.
+
+---
+
+# 🔎 Data Validation
+
+User-entered subscription data is validated before processing.
+
+Validation covers:
+
+* Subscription name
+* Price
+* Billing cycle
+* Category
+* Renewal date
+* Subscription status
+* Required fields
+
+This helps prevent invalid values from affecting financial calculations and visualizations.
+
+---
+
+# 📈 Application Workflow
+
+```text
+                    ┌───────────────────┐
+                    │      User         │
+                    └─────────┬─────────┘
+                              │
+                              ▼
+                    ┌───────────────────┐
+                    │ Streamlit UI      │
+                    └─────────┬─────────┘
+                              │
+                              ▼
+                    ┌───────────────────┐
+                    │ Subscription Data │
+                    └─────────┬─────────┘
+                              │
+                 ┌────────────┴────────────┐
+                 ▼                         ▼
+        ┌─────────────────┐       ┌─────────────────┐
+        │ Analytics       │       │ Gemini AI       │
+        │ Engine          │       │ Service         │
+        └────────┬────────┘       └────────┬────────┘
+                 │                         │
+                 ▼                         ▼
+        ┌─────────────────┐       ┌─────────────────┐
+        │ Charts & KPIs   │       │ AI Audit        │
+        └────────┬────────┘       └────────┬────────┘
+                 │                         │
+                 └────────────┬────────────┘
+                              ▼
+                    ┌───────────────────┐
+                    │ User Insights     │
+                    └───────────────────┘
+```
+
+---
+
+# 🔮 Future Enhancements
+
+Potential future improvements include:
+
+* Persistent cloud database
+* User authentication
+* Historical spending tracking
+* Automated renewal notifications
+* Subscription usage tracking
+* Bank statement integration
+* Advanced AI recommendations
+* Mobile-optimized experience
+* Email notification system
+
+---
+
+# 📜 License
+
+This project is distributed under the **MIT License**.
+
+See the [`LICENSE`](LICENSE) file for details.
+
+---
+
+# 👩‍💻 Project
+
+### SubSight AI
+
+**B.Tech AI Capstone Project**
+
+Built with:
+
+**Python · Streamlit · Pandas · Plotly · Google Gemini**
+
+---
+
+<p align="center">
+
+**[🌐 Live App](https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/) · [💻 GitHub](https://github.com/KahkshanAnsari/Subsight.AI)**
+
+</p>
+```
+
+**One thing before committing:** make sure `LICENSE` actually exists, and that the listed features match your deployed app. Don't leave documentation claiming features you didn't implement.
