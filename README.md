@@ -1,6 +1,3 @@
-Copy-paste this **entire block** directly into `README.md`:
-
-````markdown
 # SubSight AI
 
 > **Understand your subscriptions. Cut the waste.**
@@ -9,23 +6,17 @@ SubSight AI is an AI-powered subscription intelligence platform that helps users
 
 Built as a **B.Tech AI Capstone Project** using Python, Streamlit, Pandas, Plotly, and Google Gemini.
 
-<p align="center">
-
-[![Live App](https://img.shields.io/badge/Live%20App-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/KahkshanAnsari/Subsight.AI)
-[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-App-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
-
-</p>
-
 ---
 
 ## 🌐 Live Application
 
-### [Launch SubSight AI →](https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/)
+### Launch SubSight AI
 
-**Source Code:**  
-[GitHub Repository →](https://github.com/KahkshanAnsari/Subsight.AI)
+[https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/](https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/)
+
+### Source Code
+
+[https://github.com/KahkshanAnsari/Subsight.AI](https://github.com/KahkshanAnsari/Subsight.AI)
 
 ---
 
@@ -37,12 +28,12 @@ Digital subscriptions are easy to accumulate and surprisingly difficult to monit
 
 The platform combines:
 
-- Subscription management
-- Financial analytics
-- Interactive data visualization
-- Savings simulation
-- AI-powered subscription auditing
-- Personalized recommendations
+* Subscription management
+* Financial analytics
+* Interactive data visualization
+* Savings simulation
+* AI-powered subscription auditing
+* Personalized recommendations
 
 The application is designed around the official **MirAI B.Tech AI Capstone evaluation framework**.
 
@@ -54,14 +45,14 @@ The application is designed around the official **MirAI B.Tech AI Capstone evalu
 
 Get an instant overview of your complete subscription portfolio.
 
-- Total monthly spending
-- Projected annual spending
-- Active subscription count
-- Potential savings
-- Category-wise spending
-- Upcoming renewal alerts
-- Interactive financial charts
-- AI-powered portfolio snapshot
+* Total monthly spending
+* Projected annual spending
+* Active subscription count
+* Potential savings
+* Category-wise spending
+* Upcoming renewal alerts
+* Interactive financial charts
+* AI-powered portfolio snapshot
 
 ---
 
@@ -69,16 +60,16 @@ Get an instant overview of your complete subscription portfolio.
 
 Manage recurring subscriptions from a single interface.
 
-- Add subscriptions
-- Edit subscription details
-- Delete subscriptions
-- Search subscriptions
-- Filter by category
-- Track billing cycles
-- Calculate monthly equivalents
-- Calculate annual costs
-- Export subscription data
-- Interactive `st.data_editor`
+* Add subscriptions
+* Edit subscription details
+* Delete subscriptions
+* Search subscriptions
+* Filter by category
+* Track billing cycles
+* Calculate monthly equivalents
+* Calculate annual costs
+* Export subscription data
+* Interactive `st.data_editor`
 
 Subscription data is maintained using Streamlit session state during the active application session.
 
@@ -90,14 +81,14 @@ SubSight AI uses Google Gemini to analyze the user's actual subscription portfol
 
 The AI evaluates:
 
-- Overall subscription spending
-- High-cost services
-- Potentially redundant subscriptions
-- Category concentration
-- Savings opportunities
-- Keep / Review / Cancel recommendations
-- Potential alternatives
-- Financial optimization opportunities
+* Overall subscription spending
+* High-cost services
+* Potentially redundant subscriptions
+* Category concentration
+* Savings opportunities
+* Keep / Review / Cancel recommendations
+* Potential alternatives
+* Financial optimization opportunities
 
 The AI receives structured, user-specific context instead of functioning as a generic chatbot.
 
@@ -109,12 +100,12 @@ Explore hypothetical cancellation scenarios before making a decision.
 
 Users can:
 
-- Select subscriptions to cancel
-- Compare current vs optimized spending
-- Calculate monthly savings
-- Calculate annual savings
-- Visualize financial impact
-- Generate AI-assisted scenario analysis
+* Select subscriptions to cancel
+* Compare current vs optimized spending
+* Calculate monthly savings
+* Calculate annual savings
+* Visualize financial impact
+* Generate AI-assisted scenario analysis
 
 ---
 
@@ -124,12 +115,12 @@ Understand where recurring spending is going.
 
 Visualizations include:
 
-- Category spending distribution
-- Subscription cost comparisons
-- Billing-cycle analysis
-- Top recurring expenses
-- Spending trends
-- Renewal insights
+* Category spending distribution
+* Subscription cost comparisons
+* Billing-cycle analysis
+* Top recurring expenses
+* Spending trends
+* Renewal insights
 
 Charts are generated from the application's subscription dataset using Plotly.
 
@@ -141,14 +132,14 @@ SubSight AI includes a realistic demo dataset for quickly exploring the applicat
 
 Example services include:
 
-- Netflix
-- Spotify
-- YouTube Premium
-- Amazon Prime
-- Canva
-- Google One
-- Notion
-- Adobe Creative Cloud
+* Netflix
+* Spotify
+* YouTube Premium
+* Amazon Prime
+* Canva
+* Google One
+* Notion
+* Adobe Creative Cloud
 
 The demo dataset allows evaluators to explore the application's analytics and AI features without manually entering subscriptions.
 
@@ -180,7 +171,7 @@ graph TD
     Gemini --> Insights[AI Audit & Recommendations]
 
     Insights --> UI
-````
+```
 
 ---
 
@@ -301,13 +292,9 @@ Subsight.AI/
 
 ## Prerequisites
 
-Make sure the following are installed:
-
 * Python 3.11 or newer
 * Git
 * Google Gemini API key
-
----
 
 ## 1. Clone the Repository
 
@@ -316,19 +303,15 @@ git clone https://github.com/KahkshanAnsari/Subsight.AI.git
 cd Subsight.AI
 ```
 
----
-
 ## 2. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
-
 ## 3. Configure Gemini API
 
-Create the following file:
+Create:
 
 ```text
 .streamlit/secrets.toml
@@ -341,8 +324,6 @@ GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
 ```
 
 > **Important:** Never commit `secrets.toml`, `.env` files, or API keys to GitHub.
-
----
 
 ## 4. Run the Application
 
@@ -374,7 +355,7 @@ SubSight AI is deployed using **Streamlit Community Cloud**.
 
 ### Live Deployment
 
-**[Launch SubSight AI →](https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/)**
+[https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/](https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/)
 
 ---
 
@@ -566,12 +547,12 @@ This helps prevent invalid values from affecting financial calculations and visu
 
 ```text
                     ┌───────────────────┐
-                    │      User         │
+                    │       User        │
                     └─────────┬─────────┘
                               │
                               ▼
                     ┌───────────────────┐
-                    │ Streamlit UI      │
+                    │   Streamlit UI    │
                     └─────────┬─────────┘
                               │
                               ▼
@@ -582,19 +563,19 @@ This helps prevent invalid values from affecting financial calculations and visu
                  ┌────────────┴────────────┐
                  ▼                         ▼
         ┌─────────────────┐       ┌─────────────────┐
-        │ Analytics       │       │ Gemini AI       │
-        │ Engine          │       │ Service         │
+        │    Analytics    │       │    Gemini AI    │
+        │     Engine      │       │     Service     │
         └────────┬────────┘       └────────┬────────┘
                  │                         │
                  ▼                         ▼
         ┌─────────────────┐       ┌─────────────────┐
-        │ Charts & KPIs   │       │ AI Audit        │
+        │  Charts & KPIs  │       │    AI Audit     │
         └────────┬────────┘       └────────┬────────┘
                  │                         │
                  └────────────┬────────────┘
                               ▼
                     ┌───────────────────┐
-                    │ User Insights     │
+                    │   User Insights   │
                     └───────────────────┘
 ```
 
@@ -620,13 +601,13 @@ Potential future improvements include:
 
 This project is distributed under the **MIT License**.
 
-See the [`LICENSE`](LICENSE) file for details.
+See the `LICENSE` file for details.
 
 ---
 
 # 👩‍💻 Project
 
-### SubSight AI
+## SubSight AI
 
 **B.Tech AI Capstone Project**
 
@@ -641,6 +622,3 @@ Built with:
 **[🌐 Live App](https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/) · [💻 GitHub](https://github.com/KahkshanAnsari/Subsight.AI)**
 
 </p>
-```
-
-**One thing before committing:** make sure `LICENSE` actually exists, and that the listed features match your deployed app. Don't leave documentation claiming features you didn't implement.
