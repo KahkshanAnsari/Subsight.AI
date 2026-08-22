@@ -1,7 +1,6 @@
 """
-SubSight AI - Subscription Intelligence Web Application
-Author: Senior Full-Stack Python/Streamlit Engineer
-Target: Premium Fintech/SaaS Product Design System
+SubSight AI - Subscription Intelligence Platform
+Premium Fintech / SaaS Design System · Version 2.0
 """
 
 import datetime
@@ -11,13 +10,13 @@ import streamlit as st
 
 # Page Configuration - MUST be first Streamlit command
 st.set_page_config(
-    page_title="SubSight AI - Subscription Intelligence",
+    page_title="SubSight AI — Subscription Intelligence",
     page_icon="💳",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for Premium Light-Theme Fintech/SaaS Aesthetics
+# Custom CSS for Commercial Fintech / SaaS Aesthetics (Linear/Stripe-inspired)
 st.markdown(
     """
     <style>
@@ -26,31 +25,31 @@ st.markdown(
     
     /* Main Application Background & Global Typography */
     html, body, .stApp {
-        background-color: #F7F8FA !important;
+        background-color: #F8FAFC !important;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-        color: #111827;
+        color: #0F172A;
     }
     
     /* Sidebar Styling */
     [data-testid="stSidebar"] {
         background-color: #FFFFFF !important;
         border-right: 1px solid #E2E8F0 !important;
-        padding-top: 10px;
+        padding-top: 6px;
     }
     
     /* Radio Button Navigation Polish */
     [data-testid="stSidebar"] div[role="radiogroup"] > label {
-        padding: 8px 12px !important;
+        padding: 7px 12px !important;
         border-radius: 6px !important;
         font-size: 13px !important;
         font-weight: 500 !important;
         color: #475569 !important;
         margin-bottom: 2px !important;
-        transition: all 0.15s ease-in-out;
+        transition: all 0.12s ease-in-out;
     }
     [data-testid="stSidebar"] div[role="radiogroup"] > label:hover {
-        background-color: #F8FAFC !important;
-        color: #1E293B !important;
+        background-color: #F1F5F9 !important;
+        color: #0F172A !important;
     }
     [data-testid="stSidebar"] div[role="radiogroup"] > label[data-checked="true"] {
         background-color: #EFF6FF !important;
@@ -58,25 +57,32 @@ st.markdown(
         font-weight: 600 !important;
     }
     
-    /* Header Container Styling */
-    .main-header {
-        background: #FFFFFF;
-        padding: 20px 28px;
-        border-radius: 8px;
-        border: 1px solid #E2E8F0;
-        margin-bottom: 20px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    /* Page Hero Header Container */
+    .page-hero {
+        background: transparent;
+        padding: 4px 0 20px 0;
+        margin-bottom: 22px;
+        border-bottom: 1px solid #E2E8F0;
     }
-    .main-header h1 {
-        color: #172554;
-        font-size: 24px;
+    .page-eyebrow {
+        font-size: 11px;
+        font-weight: 700;
+        color: #2563EB;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+    .page-title {
+        color: #0F172A;
+        font-size: 26px;
         font-weight: 800;
         margin: 0 0 4px 0;
-        letter-spacing: -0.4px;
+        letter-spacing: -0.5px;
+        line-height: 1.25;
     }
-    .main-header p {
+    .page-subtitle {
         color: #64748B;
-        font-size: 13px;
+        font-size: 13.5px;
         margin: 0;
         font-weight: 400;
     }
@@ -85,61 +91,136 @@ st.markdown(
     [data-testid="stMetric"] {
         background-color: #FFFFFF !important;
         border: 1px solid #E2E8F0 !important;
-        padding: 16px 18px !important;
-        border-radius: 8px !important;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
+        padding: 16px 20px !important;
+        border-radius: 10px !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
     }
     [data-testid="stMetricLabel"] {
         color: #64748B !important;
-        font-size: 12px !important;
+        font-size: 11px !important;
         font-weight: 600 !important;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.6px;
     }
     [data-testid="stMetricValue"] {
-        color: #172554 !important;
-        font-size: 22px !important;
+        color: #0F172A !important;
+        font-size: 24px !important;
         font-weight: 800 !important;
+        letter-spacing: -0.5px;
+    }
+    [data-testid="stMetricDelta"] {
+        font-size: 11px !important;
+        font-weight: 500 !important;
     }
     
     /* Card Containers */
     .saas-card {
         background-color: #FFFFFF;
         border: 1px solid #E2E8F0;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        border-radius: 12px;
+        padding: 22px 24px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
         margin-bottom: 20px;
     }
     
-    /* Button Hierarchy */
+    /* Button Hierarchy - Rock-solid contrast */
     .stButton button {
-        border-radius: 6px !important;
-        font-weight: 500 !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
         font-size: 13px !important;
-        padding: 6px 14px !important;
-        transition: all 0.15s ease !important;
+        padding: 8px 16px !important;
+        transition: all 0.15s ease-in-out !important;
     }
     /* Primary Button */
-    .stButton button[kind="primary"] {
+    .stButton button[kind="primary"],
+    .stButton button[data-testid="stBaseButton-primary"],
+    div[data-testid="stFormSubmitButton"] button,
+    button[kind="primary"] {
         background-color: #2563EB !important;
         color: #FFFFFF !important;
         border: 1px solid #2563EB !important;
-        box-shadow: 0 1px 2px rgba(37, 99, 235, 0.15) !important;
+        box-shadow: 0 1px 3px rgba(37, 99, 235, 0.2) !important;
     }
-    .stButton button[kind="primary"]:hover {
+    .stButton button[kind="primary"] *,
+    .stButton button[kind="primary"] p,
+    .stButton button[kind="primary"] span,
+    .stButton button[kind="primary"] div,
+    div[data-testid="stFormSubmitButton"] button *,
+    div[data-testid="stFormSubmitButton"] button p,
+    div[data-testid="stFormSubmitButton"] button span,
+    div[data-testid="stFormSubmitButton"] button div,
+    [data-testid="stBaseButton-primary"] *,
+    [data-testid="stBaseButton-primary"] p,
+    [data-testid="stBaseButton-primary"] span {
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
+        background: transparent !important;
+    }
+    .stButton button[kind="primary"]:hover,
+    [data-testid="stBaseButton-primary"]:hover,
+    div[data-testid="stFormSubmitButton"] button:hover {
         background-color: #1D4ED8 !important;
         border-color: #1D4ED8 !important;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28) !important;
+    }
+    .stButton button[kind="primary"]:hover *,
+    [data-testid="stBaseButton-primary"]:hover *,
+    div[data-testid="stFormSubmitButton"] button:hover * {
+        color: #FFFFFF !important;
+        background: transparent !important;
+    }
+    .stButton button[kind="primary"]:active,
+    [data-testid="stBaseButton-primary"]:active,
+    div[data-testid="stFormSubmitButton"] button:active {
+        background-color: #1E40AF !important;
+        border-color: #1E40AF !important;
+    }
+    .stButton button[kind="primary"]:active *,
+    [data-testid="stBaseButton-primary"]:active *,
+    div[data-testid="stFormSubmitButton"] button:active * {
+        color: #FFFFFF !important;
+        background: transparent !important;
     }
     /* Secondary Button */
     .stButton button[kind="secondary"] {
         background-color: #FFFFFF !important;
-        color: #111827 !important;
-        border: 1px solid #E2E8F0 !important;
+        color: #0F172A !important;
+        border: 1px solid #CBD5E1 !important;
     }
     .stButton button[kind="secondary"]:hover {
         background-color: #F8FAFC !important;
+        border-color: #94A3B8 !important;
+    }
+    
+    /* Tabs styling */
+    [data-testid="stTabs"] button {
+        font-size: 13.5px !important;
+        font-weight: 600 !important;
+        color: #64748B !important;
+        padding: 8px 16px !important;
+    }
+    [data-testid="stTabs"] button[aria-selected="true"] {
+        color: #2563EB !important;
+        border-bottom-color: #2563EB !important;
+    }
+    
+    /* Form inputs polish */
+    div[data-baseweb="input"] {
+        border-radius: 8px !important;
+        border: 1px solid #CBD5E1 !important;
+        background-color: #FFFFFF !important;
+    }
+    div[data-baseweb="input"]:focus-within {
+        border-color: #2563EB !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+    }
+    div[data-baseweb="select"] > div {
+        border-radius: 8px !important;
         border-color: #CBD5E1 !important;
+    }
+    div[data-baseweb="select"] > div:focus-within {
+        border-color: #2563EB !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
     }
     
     /* Hide Default Footer */
@@ -161,8 +242,10 @@ from services.analytics import (
     get_demo_subscriptions, get_upcoming_renewals, get_category_breakdown
 )
 from services.gemini_service import run_ai_audit, run_savings_scenario_analysis, verify_gemini_client
+from services import supabase_service
 from utils.config import GITHUB_REPO_URL
 from components.sidebar import render_sidebar
+from components.auth_ui import render_auth_screen
 from components.cards import (
     render_kpi_cards, render_ai_snapshot_card, render_upcoming_renewal_cards
 )
@@ -175,9 +258,69 @@ from components.tables import (
     render_dashboard_subscription_table, render_editable_subscriptions_table, filter_subscriptions
 )
 
-# Safe Session State Initialization
+
+# ==============================================================================
+# AUTHENTICATION — Session State Initialization
+# ==============================================================================
+
+if "authenticated" not in st.session_state:
+    st.session_state["authenticated"] = False
+if "user_id" not in st.session_state:
+    st.session_state["user_id"] = ""
+if "user_email" not in st.session_state:
+    st.session_state["user_email"] = ""
+if "user_display_name" not in st.session_state:
+    st.session_state["user_display_name"] = ""
+if "access_token" not in st.session_state:
+    st.session_state["access_token"] = ""
+if "subscriptions_loaded" not in st.session_state:
+    st.session_state["subscriptions_loaded"] = False
+
+
+# ==============================================================================
+# AUTHENTICATION GUARD
+# ==============================================================================
+
+if not st.session_state["authenticated"]:
+    render_auth_screen()
+    st.stop()  # Halt execution for unauthenticated requests
+
+
+# ==============================================================================
+# SUBSCRIPTION LOADING (once per session, after login)
+# ==============================================================================
+
+if not st.session_state["subscriptions_loaded"]:
+    user_id = st.session_state["user_id"]
+    access_token = st.session_state["access_token"]
+    
+    if user_id and access_token and supabase_service.is_supabase_configured():
+        success, subs, err = supabase_service.get_user_subscriptions(user_id, access_token)
+        if success:
+            st.session_state["subscriptions"] = subs
+        else:
+            if "session has expired" in err.lower() or "jwt" in err.lower():
+                for k in ["authenticated", "user_id", "user_email", "user_display_name", "access_token", "subscriptions_loaded"]:
+                    st.session_state.pop(k, None)
+                st.session_state["subscriptions"] = []
+                st.warning("Your session has expired. Please log in again.")
+                st.rerun()
+            else:
+                st.session_state["subscriptions"] = []
+                st.warning(f"⚠️ Could not load subscriptions from database: {err}")
+    else:
+        if "subscriptions" not in st.session_state:
+            st.session_state["subscriptions"] = []
+
+    st.session_state["subscriptions_loaded"] = True
+
+
+# ==============================================================================
+# Safe Session State Initialization (non-auth keys)
+# ==============================================================================
+
 if "subscriptions" not in st.session_state:
-    st.session_state["subscriptions"] = get_demo_subscriptions()
+    st.session_state["subscriptions"] = []
 
 if "selected_page" not in st.session_state:
     st.session_state["selected_page"] = "Dashboard"
@@ -190,6 +333,44 @@ if "audit_timestamp" not in st.session_state:
 
 if "sim_audit_result" not in st.session_state:
     st.session_state["sim_audit_result"] = None
+
+
+# ==============================================================================
+# SUPABASE HELPERS — CRUD operations
+# ==============================================================================
+
+def _db_insert(sub_dict: dict) -> None:
+    """Persist a new subscription to Supabase."""
+    if st.session_state.get("authenticated") and supabase_service.is_supabase_configured():
+        uid = st.session_state.get("user_id", "")
+        tok = st.session_state.get("access_token", "")
+        if uid and tok:
+            success, err = supabase_service.insert_subscription(uid, sub_dict, tok)
+            if not success:
+                st.toast(f"⚠️ Subscription saved locally but not to database: {err}", icon="⚠️")
+
+
+def _db_upsert(sub_dict: dict) -> None:
+    """Upsert a subscription to Supabase."""
+    if st.session_state.get("authenticated") and supabase_service.is_supabase_configured():
+        uid = st.session_state.get("user_id", "")
+        tok = st.session_state.get("access_token", "")
+        if uid and tok:
+            success, err = supabase_service.upsert_subscription(uid, sub_dict, tok)
+            if not success:
+                st.toast(f"⚠️ Could not sync to database: {err}", icon="⚠️")
+
+
+def _db_delete(sub_id: str) -> None:
+    """Delete a subscription from Supabase."""
+    if st.session_state.get("authenticated") and supabase_service.is_supabase_configured():
+        uid = st.session_state.get("user_id", "")
+        tok = st.session_state.get("access_token", "")
+        if uid and tok:
+            success, err = supabase_service.delete_subscription(uid, sub_id, tok)
+            if not success:
+                st.toast(f"⚠️ Could not delete from database: {err}", icon="⚠️")
+
 
 # Render Sidebar Navigation
 current_page = render_sidebar()
@@ -206,11 +387,19 @@ has_demo = len(raw_subs) == 8 and any(s.get("service") == "Netflix Premium" for 
 # PAGE 1: DASHBOARD
 # ==============================================================================
 if current_page == "Dashboard":
+    # Dynamic personalized greeting
+    hour = datetime.datetime.now().hour
+    time_greeting = "Good morning" if hour < 12 else ("Good afternoon" if hour < 17 else "Good evening")
+    user_name = st.session_state.get("user_display_name", "")
+    user_email = st.session_state.get("user_email", "")
+    display_greeting_name = user_name.split()[0] if user_name else (user_email.split("@")[0] if user_email else "there")
+
     st.markdown(
-        """
-        <div class="main-header">
-            <h1>Subscription Overview</h1>
-            <p>Track recurring spending, monitor upcoming renewals, and uncover savings opportunities.</p>
+        f"""
+        <div class="page-hero">
+            <div class="page-eyebrow">Subscription Overview</div>
+            <h1 class="page-title">{time_greeting}, {display_greeting_name}</h1>
+            <p class="page-subtitle">Here's what your subscription portfolio looks like today.</p>
         </div>
         """,
         unsafe_allow_html=True
@@ -265,9 +454,10 @@ if current_page == "Dashboard":
 elif current_page == "Subscriptions":
     st.markdown(
         """
-        <div class="main-header">
-            <h1>Manage Subscriptions</h1>
-            <p>Add, update, filter, and track all your recurring subscriptions seamlessly.</p>
+        <div class="page-hero">
+            <div class="page-eyebrow">Portfolio Management</div>
+            <h1 class="page-title">Manage Subscriptions</h1>
+            <p class="page-subtitle">Add, update, filter, and track all your recurring commitments.</p>
         </div>
         """,
         unsafe_allow_html=True
@@ -308,6 +498,7 @@ elif current_page == "Subscriptions":
                         "status": form_status
                     })
                     st.session_state["subscriptions"].append(new_sub)
+                    _db_insert(new_sub)
                     st.success(f"Added subscription '{form_service}' successfully!")
                     st.rerun()
 
@@ -323,7 +514,7 @@ elif current_page == "Subscriptions":
     filtered_df = filter_subscriptions(df_enriched, search_q, cat_filter, status_filter)
     
     st.markdown("### Interactive Subscriptions Editor")
-    st.caption("Edits made in the table below automatically save to your session state.")
+    st.caption("Edits made in the table below automatically save to your workspace.")
     
     if not filtered_df.empty:
         edited_df = render_editable_subscriptions_table(filtered_df)
@@ -332,6 +523,7 @@ elif current_page == "Subscriptions":
         if edited_df is not None and not edited_df.empty:
             curr_map = {s["id"]: s for s in st.session_state["subscriptions"]}
             has_changes = False
+            changed_subs = []
             
             for _, r in edited_df.iterrows():
                 sub_dict = sanitize_subscription(r.to_dict())
@@ -339,10 +531,13 @@ elif current_page == "Subscriptions":
                 if sid not in curr_map or curr_map[sid] != sub_dict:
                     curr_map[sid] = sub_dict
                     has_changes = True
+                    changed_subs.append(sub_dict)
                     
             if has_changes:
                 st.session_state["subscriptions"] = list(curr_map.values())
-                st.toast("Subscriptions synced automatically!", icon="💾")
+                for changed_sub in changed_subs:
+                    _db_upsert(changed_sub)
+                st.toast("Subscriptions synchronized!", icon="💾")
         
         # Action controls bar
         col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 2])
@@ -370,6 +565,7 @@ elif current_page == "Subscriptions":
                     st.session_state["subscriptions"] = [
                         s for s in st.session_state["subscriptions"] if s["id"] != del_id
                     ]
+                    _db_delete(del_id)
                     st.toast("Subscription deleted.", icon="🗑️")
                     st.rerun()
     else:
@@ -382,9 +578,10 @@ elif current_page == "Subscriptions":
 elif current_page == "AI Audit":
     st.markdown(
         """
-        <div class="main-header">
-            <h1>AI Subscription Audit</h1>
-            <p>Let Google Gemini AI analyze your recurring portfolio to uncover overlap, waste, and savings.</p>
+        <div class="page-hero">
+            <div class="page-eyebrow" style="color: #7C3AED;">AI Intelligence</div>
+            <h1 class="page-title">AI Subscription Audit</h1>
+            <p class="page-subtitle">Your portfolio, analyzed intelligently by Google Gemini.</p>
         </div>
         """,
         unsafe_allow_html=True
@@ -422,9 +619,9 @@ elif current_page == "AI Audit":
     if audit_data:
         st.markdown(
             f"""
-            <div style="background: #EFF6FF; border: 1px solid #BFDBFE; padding: 10px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 12px; color: #1E40AF; display: flex; align-items: center; justify-content: space-between;">
+            <div style="background: #F5F3FF; border: 1px solid #DDD6FE; padding: 10px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 12px; color: #5B21B6; display: flex; align-items: center; justify-content: space-between;">
                 <span><strong>Audit Generated:</strong> {audit_ts}</span>
-                <span>Engine: Google Gemini Engine</span>
+                <span style="font-weight: 700; color: #7C3AED; background: #EDE9FE; padding: 2px 8px; border-radius: 10px;">GEMINI 2.5 ENGINE</span>
             </div>
             """,
             unsafe_allow_html=True
@@ -450,9 +647,10 @@ elif current_page == "AI Audit":
 elif current_page == "Savings Simulator":
     st.markdown(
         """
-        <div class="main-header">
-            <h1>Savings Simulator</h1>
-            <p>Simulate subscription cancellation scenarios and calculate instant financial impact.</p>
+        <div class="page-hero">
+            <div class="page-eyebrow">Financial Optimization</div>
+            <h1 class="page-title">Savings Simulator</h1>
+            <p class="page-subtitle">Simulate subscription cancellation scenarios and calculate instant financial impact.</p>
         </div>
         """,
         unsafe_allow_html=True
@@ -485,9 +683,9 @@ elif current_page == "Savings Simulator":
         # Simulation Result KPI Cards
         m_c1, m_c2, m_c3, m_c4 = st.columns(4)
         with m_c1:
-            st.metric("Current Monthly Spend", f"₹{sim_res['current_monthly']:,.2f}")
+            st.metric("Current Spend", f"₹{sim_res['current_monthly']:,.2f}/mo")
         with m_c2:
-            st.metric("New Monthly Spend", f"₹{sim_res['new_monthly']:,.2f}")
+            st.metric("Optimized Spend", f"₹{sim_res['new_monthly']:,.2f}/mo")
         with m_c3:
             st.metric("Monthly Savings", f"₹{sim_res['monthly_savings']:,.2f}", delta=f"-{sim_res['savings_percentage']:.1f}%", delta_color="normal")
         with m_c4:
@@ -528,9 +726,10 @@ elif current_page == "Savings Simulator":
 elif current_page == "Insights":
     st.markdown(
         """
-        <div class="main-header">
-            <h1>Portfolio Analytics & Insights</h1>
-            <p>Deep-dive into expense distribution, top cost drivers, renewal timelines, and cycle splits.</p>
+        <div class="page-hero">
+            <div class="page-eyebrow">Expense Analytics</div>
+            <h1 class="page-title">Portfolio Analytics & Insights</h1>
+            <p class="page-subtitle">Deep-dive into expense distribution, top cost drivers, renewal timelines, and cycle splits.</p>
         </div>
         """,
         unsafe_allow_html=True
@@ -573,14 +772,15 @@ elif current_page == "Insights":
 
 
 # ==============================================================================
-# PAGE 6: ABOUT & SYSTEM DESIGN (Clean & Professional)
+# PAGE 6: ABOUT & SYSTEM DESIGN
 # ==============================================================================
 elif current_page == "About":
     st.markdown(
         """
-        <div class="main-header">
-            <h1>SubSight AI</h1>
-            <p>Understand your subscriptions. Cut the waste.</p>
+        <div class="page-hero">
+            <div class="page-eyebrow">System Architecture</div>
+            <h1 class="page-title">SubSight AI</h1>
+            <p class="page-subtitle">Understand your subscriptions. Cut the waste.</p>
         </div>
         """,
         unsafe_allow_html=True
@@ -589,10 +789,10 @@ elif current_page == "About":
     st.markdown(
         """
         <div class="saas-card">
-            <h3 style="color: #172554; margin-top: 0; font-size: 18px;">Product Description</h3>
-            <p style="color: #475569; font-size: 14px; line-height: 1.6;">
-                SubSight AI is a modern subscription intelligence platform designed to help individuals and teams track, analyze, and optimize recurring software and streaming expenses. 
-                Using Google Gemini AI, it evaluates actual active subscriptions to identify redundant services, quantify annual spending commitments, and generate actionable savings recommendations.
+            <h3 style="color: #0F172A; margin-top: 0; font-size: 16px; font-weight: 700;">Product Overview</h3>
+            <p style="color: #475569; font-size: 13.5px; line-height: 1.6; margin-bottom: 0;">
+                SubSight AI is a modern subscription intelligence platform designed to help individuals and teams track, analyze, and optimize recurring software and streaming commitments. 
+                Using Google Gemini AI, it evaluates active subscriptions to detect redundant service pairs, quantify annual financial commitments, and generate actionable savings recommendations.
             </p>
         </div>
         """,
@@ -602,13 +802,14 @@ elif current_page == "About":
     st.markdown(
         """
         <div class="saas-card">
-            <h3 style="color: #172554; margin-top: 0; font-size: 18px; margin-bottom: 12px;">Technology Stack</h3>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <span style="background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; font-weight: 600; font-size: 12px; padding: 6px 12px; border-radius: 16px;">Python 3.11+</span>
-                <span style="background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; font-weight: 600; font-size: 12px; padding: 6px 12px; border-radius: 16px;">Streamlit</span>
-                <span style="background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; font-weight: 600; font-size: 12px; padding: 6px 12px; border-radius: 16px;">Pandas</span>
-                <span style="background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; font-weight: 600; font-size: 12px; padding: 6px 12px; border-radius: 16px;">Plotly</span>
-                <span style="background: #F0FDF4; color: #16A34A; border: 1px solid #BBF7D0; font-weight: 600; font-size: 12px; padding: 6px 12px; border-radius: 16px;">Google Gemini AI</span>
+            <h3 style="color: #0F172A; margin-top: 0; font-size: 16px; font-weight: 700; margin-bottom: 14px;">Technology Stack</h3>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <span style="background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; font-weight: 600; font-size: 12px; padding: 5px 12px; border-radius: 16px;">Python 3.11+</span>
+                <span style="background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; font-weight: 600; font-size: 12px; padding: 5px 12px; border-radius: 16px;">Streamlit</span>
+                <span style="background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; font-weight: 600; font-size: 12px; padding: 5px 12px; border-radius: 16px;">Pandas</span>
+                <span style="background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; font-weight: 600; font-size: 12px; padding: 5px 12px; border-radius: 16px;">Plotly</span>
+                <span style="background: #F0FDF4; color: #16A34A; border: 1px solid #BBF7D0; font-weight: 600; font-size: 12px; padding: 5px 12px; border-radius: 16px;">Google Gemini AI</span>
+                <span style="background: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-weight: 600; font-size: 12px; padding: 5px 12px; border-radius: 16px;">Supabase Auth & PostgreSQL</span>
             </div>
         </div>
         """,
@@ -621,7 +822,7 @@ elif current_page == "About":
         st.markdown(
             f"""
             <div class="saas-card">
-                <h3 style="color: #172554; margin-top: 0; font-size: 18px;">Open Source Repository</h3>
+                <h3 style="color: #0F172A; margin-top: 0; font-size: 16px; font-weight: 700;">Open Source Repository</h3>
                 <p style="color: #64748B; font-size: 13px; line-height: 1.5; margin-bottom: 16px;">
                     Explore the full source code, technical architecture, and system documentation on GitHub.
                 </p>
@@ -637,12 +838,12 @@ elif current_page == "About":
         st.markdown(
             """
             <div class="saas-card">
-                <h3 style="color: #172554; margin-top: 0; font-size: 18px;">Capstone Project</h3>
+                <h3 style="color: #0F172A; margin-top: 0; font-size: 16px; font-weight: 700;">Capstone Project</h3>
                 <p style="color: #64748B; font-size: 13px; line-height: 1.5; margin-bottom: 12px;">
                     Developed as a B.Tech Artificial Intelligence Capstone Project.
                 </p>
-                <div style="font-size: 12px; font-weight: 600; color: #172554; background: #F8FAFC; padding: 8px 12px; border-radius: 6px; border: 1px solid #E2E8F0;">
-                    B.Tech AI Capstone · Version 1.0
+                <div style="font-size: 12px; font-weight: 600; color: #0F172A; background: #F8FAFC; padding: 8px 12px; border-radius: 6px; border: 1px solid #E2E8F0;">
+                    B.Tech AI Capstone · Version 2.0
                 </div>
             </div>
             """,

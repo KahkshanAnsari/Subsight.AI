@@ -374,7 +374,153 @@ Sensitive files such as:
 
 are excluded from version control.
 
-For Streamlit Community Cloud, the Gemini API key is configured through the application's **Secrets** settings.
+For Streamlit Community Cloud, credentials are configured through the application's **Secrets** settings.
+
+---
+
+# 🔒 Authentication & Database (v2.0)
+
+SubSight AI v2.0 adds real user authentication and persistent subscription storage powered by **Supabase**.
+
+## Authentication Architecture
+
+```text
+User enters email + password
+        ↓
+Supabase Auth (email/password provider)
+        ↓
+JWT access token returned
+        ↓
+Token stored in st.session_state["access_token"]
+        ↓
+All database queries sent with JWT in Authorization header
+        ↓
+PostgreSQL Row Level Security binds auth.uid() to user_id
+        ↓
+Users can only access their own rows
+```
+
+Passwords are **never stored in our database**. They are managed exclusively by Supabase Auth.
+
+## Database Schema
+
+The `subscriptions` table stores one row per subscription per user:
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | TEXT (PK) | App-generated `sub_xxxxxxxx` format |
+| `user_id` | UUID (FK) | References `auth.users(id)` — ON DELETE CASCADE |
+| `name` | TEXT | Subscription service name |
+| `price` | NUMERIC(12,2) | Billing price |
+| `billing_cycle` | TEXT | Monthly / Quarterly / Yearly |
+| `category` | TEXT | Entertainment / Productivity / etc. |
+| `currency` | TEXT | INR (₹) / USD ($) / etc. |
+| `renewal_date` | DATE | Next renewal date |
+| `status` | TEXT | Active / Review Needed / Paused / Cancelled |
+| `created_at` | TIMESTAMPTZ | Auto-set on INSERT |
+| `updated_at` | TIMESTAMPTZ | Auto-updated via trigger |
+
+## Row Level Security (RLS)
+
+RLS is enabled on the `subscriptions` table with four policies:
+
+| Operation | Policy |
+| --- | --- |
+| SELECT | `auth.uid() = user_id` |
+| INSERT | `auth.uid() = user_id` |
+| UPDATE | `auth.uid() = user_id` (both USING and WITH CHECK) |
+| DELETE | `auth.uid() = user_id` |
+
+A user **cannot read, write, update, or delete** another user's subscription data — even with a valid JWT.
+
+## Supabase Setup
+
+### 1. Create a Supabase Project
+
+1. Go to [supabase.com](https://supabase.com) and create a free account.
+2. Create a new project and note the **Project URL** and **anon/public key**.
+
+### 2. Run the Database Schema
+
+1. Open the Supabase Dashboard → **SQL Editor** → **New query**.
+2. Paste the contents of `supabase/schema.sql` and click **Run**.
+
+### 3. Configure Streamlit Secrets
+
+**Local development** — add to `.streamlit/secrets.toml`:
+
+```toml
+GEMINI_API_KEY = "your-gemini-api-key"
+SUPABASE_URL   = "https://your-project-ref.supabase.co"
+SUPABASE_KEY   = "your-anon-public-key"
+```
+
+**Streamlit Community Cloud** — add to **App Settings → Secrets**:
+
+```toml
+GEMINI_API_KEY = "your-gemini-api-key"
+SUPABASE_URL   = "https://your-project-ref.supabase.co"
+SUPABASE_KEY   = "your-anon-public-key"
+```
+
+> **Important:** Use the **anon/public key**, not the service role key. RLS enforces security at the database level.
+
+## Application Flow
+
+```text
+Unauthenticated user
+        ↓
+Authentication screen (Login / Sign Up tabs)
+        ↓
+Supabase Auth validates credentials
+        ↓
+JWT stored in st.session_state
+        ↓
+Fetch user's subscriptions from Supabase
+        ↓
+Existing SubSight AI dashboard loads
+        ↓
+Add / Edit / Delete operations sync to Supabase + session_state
+        ↓
+Logout clears session state → returns to auth screen
+```
+
+## Updated Project Structure (v2.0)
+
+```text
+Subsight.AI/
+│
+├── app.py                    ← Auth guard + Supabase wiring added
+├── requirements.txt          ← supabase>=2.0.0 added
+├── README.md
+│
+├── .streamlit/
+│   ├── config.toml
+│   └── secrets.toml          ← SUPABASE_URL + SUPABASE_KEY added
+│
+├── supabase/
+│   └── schema.sql            ← NEW: Complete DB schema with RLS
+│
+├── components/
+│   ├── auth_ui.py            ← NEW: Login / Sign Up screen
+│   ├── sidebar.py            ← Account section + logout added
+│   ├── cards.py
+│   ├── charts.py
+│   └── tables.py
+│
+├── services/
+│   ├── supabase_service.py   ← NEW: All Supabase auth + CRUD logic
+│   ├── gemini_service.py
+│   └── analytics.py
+│
+├── utils/
+│   ├── calculations.py
+│   ├── validators.py
+│   └── config.py
+│
+└── assets/
+    └── logo.svg
+```
 
 ---
 
