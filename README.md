@@ -2,9 +2,9 @@
 
 > **Understand your subscriptions. Cut the waste.**
 
-SubSight AI is an AI-powered subscription intelligence platform that helps users track recurring expenses, analyze subscription spending, identify potential savings, and receive personalized financial recommendations powered by Google Gemini.
+SubSight AI is a premium AI-powered subscription intelligence platform that helps users track recurring expenses, understand spending patterns, identify potential savings, monitor renewals, and receive personalized financial recommendations powered by Google Gemini.
 
-Built as a **B.Tech AI Capstone Project** using Python, Streamlit, Pandas, Plotly, and Google Gemini.
+Built as a **B.Tech AI Capstone Project** using Python, Streamlit, Pandas, Plotly, Google Gemini, and Supabase.
 
 ---
 
@@ -24,22 +24,59 @@ Built as a **B.Tech AI Capstone Project** using Python, Streamlit, Pandas, Plotl
 
 Digital subscriptions are easy to accumulate and surprisingly difficult to monitor.
 
-**SubSight AI** provides a centralized dashboard for understanding recurring subscription expenses and making better financial decisions about what to keep, review, or cancel.
+**SubSight AI** provides a centralized personal workspace for understanding recurring subscription expenses and making better financial decisions about what to keep, review, or cancel.
 
 The platform combines:
 
+* Personal user accounts
+* Persistent subscription storage
 * Subscription management
 * Financial analytics
+* Renewal tracking
 * Interactive data visualization
 * Savings simulation
 * AI-powered subscription auditing
 * Personalized recommendations
+* Secure user-level data isolation
 
-The application is designed around the official **MirAI B.Tech AI Capstone evaluation framework**.
+Each user gets their own subscription portfolio. Data is persisted using Supabase and protected using PostgreSQL Row Level Security.
 
 ---
 
 # ✨ Key Features
+
+## 👤 User Authentication
+
+SubSight AI provides a real account-based experience using Supabase Authentication.
+
+Users can:
+
+* Create an account
+* Log in securely
+* Log out
+* Access their personal subscription portfolio
+* Return later and retrieve previously saved subscriptions
+
+Passwords are handled by Supabase Auth and are not manually stored by the application.
+
+---
+
+## 💾 Persistent Subscription Storage
+
+Subscription data is stored in a cloud PostgreSQL database through Supabase.
+
+Unlike a session-only demo, subscriptions remain available when the user:
+
+* Refreshes the application
+* Logs out
+* Logs back in
+* Returns to the application later
+
+Each subscription is associated with the authenticated user's unique ID.
+
+PostgreSQL Row Level Security ensures that users can only access their own subscription records.
+
+---
 
 ## 📊 Financial Dashboard
 
@@ -53,6 +90,8 @@ Get an instant overview of your complete subscription portfolio.
 * Upcoming renewal alerts
 * Interactive financial charts
 * AI-powered portfolio snapshot
+
+The dashboard dynamically reflects the authenticated user's subscription data.
 
 ---
 
@@ -68,10 +107,32 @@ Manage recurring subscriptions from a single interface.
 * Track billing cycles
 * Calculate monthly equivalents
 * Calculate annual costs
+* Track renewal dates
+* Track subscription status
 * Export subscription data
 * Interactive `st.data_editor`
 
-Subscription data is maintained using Streamlit session state during the active application session.
+Supported billing cycles:
+
+* Monthly
+* Quarterly
+* Yearly
+
+---
+
+## 📅 Renewal Tracking
+
+SubSight AI helps users understand upcoming subscription renewals.
+
+Users can see:
+
+* Next renewal date
+* Upcoming renewals
+* Subscription status
+* Time remaining before renewal
+* Renewal-related spending
+
+This makes it easier to review subscriptions before another billing cycle begins.
 
 ---
 
@@ -90,7 +151,21 @@ The AI evaluates:
 * Potential alternatives
 * Financial optimization opportunities
 
-The AI receives structured, user-specific context instead of functioning as a generic chatbot.
+The AI receives structured, user-specific financial context rather than functioning as a generic chatbot.
+
+### AI Engineering
+
+The AI integration uses:
+
+* System-level instructions
+* Dynamic user context
+* Python f-strings
+* Structured financial data
+* Explicit reasoning constraints
+* Recommendation prioritization
+* Data-grounded responses
+
+The model is instructed to reason from the user's supplied data and avoid inventing unsupported subscription prices, usage information, or savings.
 
 ---
 
@@ -107,6 +182,10 @@ Users can:
 * Visualize financial impact
 * Generate AI-assisted scenario analysis
 
+The simulator helps answer:
+
+> “What happens to my yearly spending if I cancel these subscriptions?”
+
 ---
 
 ## 📈 Portfolio Insights
@@ -122,13 +201,13 @@ Visualizations include:
 * Spending trends
 * Renewal insights
 
-Charts are generated from the application's subscription dataset using Plotly.
+Charts are generated from the authenticated user's subscription dataset using Plotly.
 
 ---
 
 ## 🧪 Demo Data
 
-SubSight AI includes a realistic demo dataset for quickly exploring the application.
+SubSight AI includes realistic demo data so evaluators and new users can immediately explore the platform.
 
 Example services include:
 
@@ -141,7 +220,9 @@ Example services include:
 * Notion
 * Adobe Creative Cloud
 
-The demo dataset allows evaluators to explore the application's analytics and AI features without manually entering subscriptions.
+Demo data is loaded only when the user explicitly chooses the **Load Demo** action.
+
+Demo records are associated with the currently authenticated user and do not expose another user's data.
 
 ---
 
@@ -152,11 +233,21 @@ graph TD
 
     User([User / Browser])
 
-    User <--> UI[Streamlit UI]
+    User --> UI[Streamlit UI]
 
-    UI <--> State[st.session_state]
+    UI --> Auth[Supabase Authentication]
 
-    State --> Data[Pandas DataFrame]
+    Auth --> Session[st.session_state]
+
+    Session --> Data[Pandas DataFrame]
+
+    UI --> CRUD[Subscription CRUD]
+
+    CRUD --> DB[(Supabase PostgreSQL)]
+
+    DB --> RLS[Row Level Security]
+
+    RLS --> UserData[User-Owned Subscription Data]
 
     Data --> Validation[Validation & Sanitization]
 
@@ -175,81 +266,132 @@ graph TD
 
 ---
 
-# 🔄 Data Flow
+# 🔄 Authentication & Data Flow
 
 ```text
-User Input
-    ↓
-Streamlit Form / Data Editor
-    ↓
-Validation & Sanitization
-    ↓
-Session State
-    ↓
+User
+  ↓
+Login / Sign Up
+  ↓
+Supabase Auth
+  ↓
+Authenticated Session
+  ↓
+User ID
+  ↓
+st.session_state
+  ↓
+Fetch User's Subscriptions
+  ↓
 Pandas DataFrame
-    ↓
-Financial Calculations
-    ↓
-Analytics & Visualization
-    ↓
-Gemini AI Context Builder
-    ↓
-Google Gemini API
-    ↓
-AI Audit & Recommendations
-    ↓
-User Dashboard
+  ↓
+Analytics + Visualizations
+  ↓
+Gemini AI Context
+  ↓
+AI Audit / Recommendations
 ```
 
-### Processing Flow
+### Subscription Save Flow
 
-1. User enters subscription information.
-2. Input is validated and sanitized.
-3. Subscription data is maintained using `st.session_state`.
-4. Pandas processes the subscription dataset.
-5. Monthly and annual costs are calculated.
-6. Analytics modules generate spending insights.
-7. Plotly renders interactive visualizations.
-8. Gemini receives structured, user-specific context.
-9. AI generates subscription recommendations.
-10. Results are presented through the dashboard.
+```text
+User adds subscription
+        ↓
+Streamlit Form
+        ↓
+Input Validation
+        ↓
+Authenticated User ID
+        ↓
+Supabase PostgreSQL
+        ↓
+RLS verifies ownership
+        ↓
+Subscription stored
+        ↓
+Session State updated
+        ↓
+Dashboard recalculated
+```
 
 ---
 
-# 🧠 AI Integration
+# 🔐 Security Architecture
 
-SubSight AI integrates Google's Gemini API through the `google-genai` SDK.
+SubSight AI uses Supabase Authentication and PostgreSQL Row Level Security.
 
-The AI engine is specifically designed for subscription analysis rather than generic conversation.
+### Authentication
 
-### Prompt Engineering
+Supabase manages:
 
-The AI integration uses:
+* User accounts
+* Password handling
+* Authentication sessions
+* User identity
 
-* System-level instructions
-* Dynamic user context
-* Python f-strings
-* Structured financial data
-* Explicit reasoning constraints
-* Recommendation prioritization
-* Data-grounded responses
+The application does not manually store user passwords.
 
-The model is instructed to analyze the information supplied by the application and avoid inventing unsupported subscription prices, usage information, or savings.
+### Row Level Security
+
+The `subscriptions` table uses RLS policies based on:
+
+```text
+auth.uid() = user_id
+```
+
+This means an authenticated user can only:
+
+* Read their own subscriptions
+* Insert their own subscriptions
+* Update their own subscriptions
+* Delete their own subscriptions
+
+Even if another user's subscription ID is known, the RLS policy prevents unauthorized access.
+
+---
+
+# 🗄️ Database Schema
+
+The application uses a PostgreSQL `subscriptions` table.
+
+| Column          | Type        | Description                                 |
+| --------------- | ----------- | ------------------------------------------- |
+| `id`            | TEXT        | Application-generated subscription ID       |
+| `user_id`       | UUID        | Authenticated Supabase user ID              |
+| `name`          | TEXT        | Subscription service name                   |
+| `price`         | NUMERIC     | Subscription price                          |
+| `billing_cycle` | TEXT        | Monthly / Quarterly / Yearly                |
+| `category`      | TEXT        | Subscription category                       |
+| `currency`      | TEXT        | Currency                                    |
+| `renewal_date`  | DATE        | Next renewal date                           |
+| `status`        | TEXT        | Active / Review Needed / Paused / Cancelled |
+| `created_at`    | TIMESTAMPTZ | Creation timestamp                          |
+| `updated_at`    | TIMESTAMPTZ | Last update timestamp                       |
+
+Database schema and RLS policies are defined in:
+
+```text
+supabase/schema.sql
+```
 
 ---
 
 # 🛠️ Technology Stack
 
-| Technology     | Purpose                                |
-| -------------- | -------------------------------------- |
-| Python 3.11+   | Core application logic                 |
-| Streamlit      | Web application framework              |
-| Pandas         | Data processing                        |
-| Plotly         | Interactive data visualization         |
-| Google Gemini  | AI analysis and recommendations        |
-| `google-genai` | Gemini API integration                 |
-| Git            | Version control                        |
-| GitHub         | Source control and open-source hosting |
+| Technology                | Purpose                                |
+| ------------------------- | -------------------------------------- |
+| Python 3.11+              | Core application logic                 |
+| Streamlit                 | Web application framework              |
+| Pandas                    | Data processing                        |
+| Plotly                    | Interactive data visualization         |
+| Google Gemini             | AI analysis and recommendations        |
+| `google-genai`            | Gemini API integration                 |
+| Supabase Auth             | User authentication                    |
+| PostgreSQL                | Persistent database                    |
+| Supabase RLS              | User-level data security               |
+| Git                       | Version control                        |
+| GitHub                    | Source control and open-source hosting |
+| Streamlit Community Cloud | Cloud deployment                       |
 
 ---
 
@@ -267,13 +409,18 @@ Subsight.AI/
 ├── .streamlit/
 │   └── config.toml
 │
+├── supabase/
+│   └── schema.sql
+│
 ├── components/
+│   ├── auth_ui.py
 │   ├── sidebar.py
 │   ├── cards.py
 │   ├── charts.py
 │   └── tables.py
 │
 ├── services/
+│   ├── supabase_service.py
 │   ├── gemini_service.py
 │   └── analytics.py
 │
@@ -292,9 +439,12 @@ Subsight.AI/
 
 ## Prerequisites
 
-* Python 3.11 or newer
+* Python 3.11+
 * Git
+* Supabase account
 * Google Gemini API key
+
+---
 
 ## 1. Clone the Repository
 
@@ -303,13 +453,47 @@ git clone https://github.com/KahkshanAnsari/Subsight.AI.git
 cd Subsight.AI
 ```
 
+---
+
 ## 2. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 3. Configure Gemini API
+---
+
+## 3. Configure Supabase
+
+Create a Supabase project.
+
+Then open:
+
+```text
+Supabase Dashboard
+→ SQL Editor
+→ New Query
+```
+
+Copy the contents of:
+
+```text
+supabase/schema.sql
+```
+
+Paste them into the SQL Editor and run the script.
+
+This creates:
+
+* `subscriptions` table
+* indexes
+* RLS
+* RLS policies
+* `updated_at` trigger
+
+---
+
+## 4. Configure Local Secrets
 
 Create:
 
@@ -320,12 +504,29 @@ Create:
 Add:
 
 ```toml
-GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
+GEMINI_API_KEY = "your-gemini-api-key"
+
+SUPABASE_URL = "https://your-project-ref.supabase.co"
+
+SUPABASE_KEY = "your-anon-public-key"
 ```
 
-> **Important:** Never commit `secrets.toml`, `.env` files, or API keys to GitHub.
+### Security
 
-## 4. Run the Application
+Never commit:
+
+```text
+.streamlit/secrets.toml
+.env
+```
+
+to GitHub.
+
+Never expose your Supabase service-role key or Gemini API key publicly.
+
+---
+
+## 5. Run the Application
 
 ```bash
 python -m streamlit run app.py
@@ -353,306 +554,59 @@ SubSight AI is deployed using **Streamlit Community Cloud**.
 | Dependencies | `requirements.txt`           |
 | Platform     | Streamlit Community Cloud    |
 
-### Live Deployment
+### Streamlit Cloud Secrets
 
-[https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/](https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/)
-
----
-
-# 🔐 Security & Secrets
-
-API credentials are not stored directly in the source code.
-
-The application uses Streamlit secrets for deployment configuration.
-
-Sensitive files such as:
+For the deployed application, configure secrets through:
 
 ```text
-.streamlit/secrets.toml
-.env
+Streamlit Cloud
+→ App Settings
+→ Secrets
 ```
 
-are excluded from version control.
-
-For Streamlit Community Cloud, credentials are configured through the application's **Secrets** settings.
-
----
-
-# 🔒 Authentication & Database (v2.0)
-
-SubSight AI v2.0 adds real user authentication and persistent subscription storage powered by **Supabase**.
-
-## Authentication Architecture
-
-```text
-User enters email + password
-        ↓
-Supabase Auth (email/password provider)
-        ↓
-JWT access token returned
-        ↓
-Token stored in st.session_state["access_token"]
-        ↓
-All database queries sent with JWT in Authorization header
-        ↓
-PostgreSQL Row Level Security binds auth.uid() to user_id
-        ↓
-Users can only access their own rows
-```
-
-Passwords are **never stored in our database**. They are managed exclusively by Supabase Auth.
-
-## Database Schema
-
-The `subscriptions` table stores one row per subscription per user:
-
-| Column | Type | Notes |
-| --- | --- | --- |
-| `id` | TEXT (PK) | App-generated `sub_xxxxxxxx` format |
-| `user_id` | UUID (FK) | References `auth.users(id)` — ON DELETE CASCADE |
-| `name` | TEXT | Subscription service name |
-| `price` | NUMERIC(12,2) | Billing price |
-| `billing_cycle` | TEXT | Monthly / Quarterly / Yearly |
-| `category` | TEXT | Entertainment / Productivity / etc. |
-| `currency` | TEXT | INR (₹) / USD ($) / etc. |
-| `renewal_date` | DATE | Next renewal date |
-| `status` | TEXT | Active / Review Needed / Paused / Cancelled |
-| `created_at` | TIMESTAMPTZ | Auto-set on INSERT |
-| `updated_at` | TIMESTAMPTZ | Auto-updated via trigger |
-
-## Row Level Security (RLS)
-
-RLS is enabled on the `subscriptions` table with four policies:
-
-| Operation | Policy |
-| --- | --- |
-| SELECT | `auth.uid() = user_id` |
-| INSERT | `auth.uid() = user_id` |
-| UPDATE | `auth.uid() = user_id` (both USING and WITH CHECK) |
-| DELETE | `auth.uid() = user_id` |
-
-A user **cannot read, write, update, or delete** another user's subscription data — even with a valid JWT.
-
-## Supabase Setup
-
-### 1. Create a Supabase Project
-
-1. Go to [supabase.com](https://supabase.com) and create a free account.
-2. Create a new project and note the **Project URL** and **anon/public key**.
-
-### 2. Run the Database Schema
-
-1. Open the Supabase Dashboard → **SQL Editor** → **New query**.
-2. Paste the contents of `supabase/schema.sql` and click **Run**.
-
-### 3. Configure Streamlit Secrets
-
-**Local development** — add to `.streamlit/secrets.toml`:
+Use:
 
 ```toml
 GEMINI_API_KEY = "your-gemini-api-key"
-SUPABASE_URL   = "https://your-project-ref.supabase.co"
-SUPABASE_KEY   = "your-anon-public-key"
+
+SUPABASE_URL = "https://your-project-ref.supabase.co"
+
+SUPABASE_KEY = "your-anon-public-key"
 ```
 
-**Streamlit Community Cloud** — add to **App Settings → Secrets**:
-
-```toml
-GEMINI_API_KEY = "your-gemini-api-key"
-SUPABASE_URL   = "https://your-project-ref.supabase.co"
-SUPABASE_KEY   = "your-anon-public-key"
-```
-
-> **Important:** Use the **anon/public key**, not the service role key. RLS enforces security at the database level.
-
-## Application Flow
-
-```text
-Unauthenticated user
-        ↓
-Authentication screen (Login / Sign Up tabs)
-        ↓
-Supabase Auth validates credentials
-        ↓
-JWT stored in st.session_state
-        ↓
-Fetch user's subscriptions from Supabase
-        ↓
-Existing SubSight AI dashboard loads
-        ↓
-Add / Edit / Delete operations sync to Supabase + session_state
-        ↓
-Logout clears session state → returns to auth screen
-```
-
-## Updated Project Structure (v2.0)
-
-```text
-Subsight.AI/
-│
-├── app.py                    ← Auth guard + Supabase wiring added
-├── requirements.txt          ← supabase>=2.0.0 added
-├── README.md
-│
-├── .streamlit/
-│   ├── config.toml
-│   └── secrets.toml          ← SUPABASE_URL + SUPABASE_KEY added
-│
-├── supabase/
-│   └── schema.sql            ← NEW: Complete DB schema with RLS
-│
-├── components/
-│   ├── auth_ui.py            ← NEW: Login / Sign Up screen
-│   ├── sidebar.py            ← Account section + logout added
-│   ├── cards.py
-│   ├── charts.py
-│   └── tables.py
-│
-├── services/
-│   ├── supabase_service.py   ← NEW: All Supabase auth + CRUD logic
-│   ├── gemini_service.py
-│   └── analytics.py
-│
-├── utils/
-│   ├── calculations.py
-│   ├── validators.py
-│   └── config.py
-│
-└── assets/
-    └── logo.svg
-```
+Do not put production credentials inside the GitHub repository.
 
 ---
 
-# 📋 Capstone Evaluation Framework
+# 🔒 Security & Secrets
 
-The project is developed according to the official **MirAI B.Tech AI Capstone evaluation framework**.
+API credentials are not hardcoded into the source code.
 
-| Evaluation Category                 | Maximum Points |
-| ----------------------------------- | -------------: |
-| Technical Architecture              |             25 |
-| AI Integration & Prompt Engineering |             20 |
-| UI/UX & Data Visualization          |             20 |
-| Deployment & Cloud Engineering      |             15 |
-| Open-Source GitHub Branding         |             10 |
-| System Design & Documentation       |             10 |
-| **Total**                           |        **100** |
+The application uses Streamlit Secrets for runtime configuration.
 
-### 1. Technical Architecture — 25 Points
+Sensitive configuration is excluded from version control.
 
-Implemented concepts include:
+The application follows a user-isolated data model:
 
-* `st.session_state`
-* `st.form`
-* Pandas DataFrames
-* Modular Python architecture
-* Input validation
-* Data sanitization
-* Error handling
-
-### 2. AI Integration & Prompt Engineering — 20 Points
-
-Implemented concepts include:
-
-* Google Gemini API
-* System instructions
-* Dynamic context construction
-* f-string based prompts
-* Data-grounded recommendations
-* Specialized subscription analysis
-
-### 3. UI/UX & Data Visualization — 20 Points
-
-Implemented concepts include:
-
-* Professional light-theme interface
-* KPI metric cards
-* Dynamic metric deltas
-* Column-based layouts
-* Expanders
-* Interactive data editor
-* Plotly visualizations
-* Search and filtering
-* Responsive application states
-
-### 4. Deployment & Cloud Engineering — 15 Points
-
-Implemented concepts include:
-
-* Streamlit Community Cloud deployment
-* GitHub-based source deployment
-* `requirements.txt`
-* Streamlit configuration
-* Secure secrets management
-
-### 5. Open-Source Branding — 10 Points
-
-The repository includes:
-
-* Professional README
-* Architecture documentation
-* Setup instructions
-* Deployment instructions
-* Technology documentation
-* Live application link
-* GitHub repository
-
-### 6. System Design & Documentation — 10 Points
-
-Documentation covers:
-
-* System architecture
-* Data flow
-* AI integration strategy
-* Application modules
-* Data validation
-* Analytics pipeline
-* Deployment architecture
-
-> **Note:** The point values above represent the official evaluation weightage. Final scores are determined by the evaluator.
-
----
-
-# 🧩 Core Modules
-
-### `app.py`
-
-Main Streamlit application entry point and page routing.
-
-### `components/`
-
-Contains reusable UI components:
-
-* Sidebar
-* Metric cards
-* Charts
-* Tables
-* Navigation elements
-
-### `services/`
-
-Contains application services:
-
-* Gemini AI integration
-* Analytics processing
-* AI prompt construction
-
-### `utils/`
-
-Contains reusable utilities:
-
-* Financial calculations
-* Data validation
-* Configuration
-* Data sanitization
+```text
+Authenticated User
+        ↓
+Supabase Auth
+        ↓
+User ID
+        ↓
+subscriptions.user_id
+        ↓
+PostgreSQL RLS
+        ↓
+Only user's records
+```
 
 ---
 
 # 📊 Financial Calculations
 
 SubSight AI normalizes subscription costs across different billing cycles.
-
-Examples:
 
 ```text
 Monthly subscription
@@ -689,41 +643,224 @@ This helps prevent invalid values from affecting financial calculations and visu
 
 ---
 
-# 📈 Application Workflow
+# 📋 Capstone Evaluation Framework
+
+The project is developed according to the official **MirAI B.Tech AI Capstone evaluation framework**.
+
+| Evaluation Category                 | Maximum Points |
+| ----------------------------------- | -------------: |
+| Technical Architecture              |             25 |
+| AI Integration & Prompt Engineering |             20 |
+| UI/UX & Data Visualization          |             20 |
+| Deployment & Cloud Engineering      |             15 |
+| Open-Source GitHub Branding         |             10 |
+| System Design & Documentation       |             10 |
+| **Total**                           |        **100** |
+
+### 1. Technical Architecture — 25 Points
+
+Implemented concepts include:
+
+* `st.session_state`
+* `st.form`
+* Pandas DataFrames
+* Modular Python architecture
+* Supabase persistence
+* PostgreSQL database
+* Row Level Security
+* Input validation
+* Data sanitization
+* Error handling
+
+### 2. AI Integration & Prompt Engineering — 20 Points
+
+Implemented concepts include:
+
+* Google Gemini API
+* System instructions
+* Dynamic context construction
+* f-string based prompts
+* Structured financial context
+* Data-grounded recommendations
+* Specialized subscription analysis
+
+### 3. UI/UX & Data Visualization — 20 Points
+
+Implemented concepts include:
+
+* Premium light-theme interface
+* KPI metric cards
+* Dynamic metric deltas
+* Column-based layouts
+* Expanders
+* Interactive data editor
+* Plotly visualizations
+* Search and filtering
+* Responsive authentication experience
+
+### 4. Deployment & Cloud Engineering — 15 Points
+
+Implemented concepts include:
+
+* Streamlit Community Cloud
+* GitHub-based deployment
+* `requirements.txt`
+* Streamlit configuration
+* Secure secrets management
+* Supabase cloud database
+
+### 5. Open-Source GitHub Branding — 10 Points
+
+The repository includes:
+
+* Professional README
+* Architecture documentation
+* Setup instructions
+* Deployment instructions
+* Database documentation
+* Live application link
+* GitHub repository
+
+### 6. System Design & Documentation — 10 Points
+
+Documentation covers:
+
+* System architecture
+* Authentication flow
+* Database architecture
+* RLS security model
+* Data flow
+* AI integration strategy
+* Application modules
+* Data validation
+* Deployment architecture
+
+> **Note:** The point values above represent the official evaluation weightage. Final scores are determined by the evaluator.
+
+---
+
+# 🧩 Core Modules
+
+### `app.py`
+
+Main Streamlit application entry point, authentication guard, routing, and application orchestration.
+
+### `components/`
+
+Reusable presentation components:
+
+* Authentication UI
+* Sidebar
+* Metric cards
+* Charts
+* Tables
+* Navigation elements
+
+### `services/`
+
+Application services:
+
+* Supabase authentication
+* Subscription CRUD
+* Gemini AI integration
+* Analytics processing
+* AI prompt construction
+
+### `utils/`
+
+Reusable utilities:
+
+* Financial calculations
+* Data validation
+* Configuration
+* Data sanitization
+
+### `supabase/schema.sql`
+
+Database definition including:
+
+* Subscription table
+* Foreign key relationship
+* Indexes
+* Row Level Security
+* Security policies
+* Automatic update trigger
+
+---
+
+# 🔄 Application Workflow
 
 ```text
-                    ┌───────────────────┐
-                    │       User        │
-                    └─────────┬─────────┘
+                    ┌────────────────────┐
+                    │        User        │
+                    └─────────┬──────────┘
                               │
                               ▼
-                    ┌───────────────────┐
-                    │   Streamlit UI    │
-                    └─────────┬─────────┘
+                    ┌────────────────────┐
+                    │   Authentication   │
+                    │    Supabase Auth   │
+                    └─────────┬──────────┘
                               │
                               ▼
-                    ┌───────────────────┐
-                    │ Subscription Data │
-                    └─────────┬─────────┘
+                    ┌────────────────────┐
+                    │  Streamlit Session │
+                    │    st.session_state│
+                    └─────────┬──────────┘
+                              │
+                              ▼
+                    ┌────────────────────┐
+                    │   Subscription     │
+                    │       Data         │
+                    └─────────┬──────────┘
                               │
                  ┌────────────┴────────────┐
                  ▼                         ▼
         ┌─────────────────┐       ┌─────────────────┐
-        │    Analytics    │       │    Gemini AI    │
-        │     Engine      │       │     Service     │
+        │    Supabase     │       │    Analytics    │
+        │   PostgreSQL    │       │     Engine      │
         └────────┬────────┘       └────────┬────────┘
                  │                         │
                  ▼                         ▼
         ┌─────────────────┐       ┌─────────────────┐
-        │  Charts & KPIs  │       │    AI Audit     │
-        └────────┬────────┘       └────────┬────────┘
-                 │                         │
-                 └────────────┬────────────┘
+        │       RLS       │       │ Charts & KPIs  │
+        └─────────────────┘       └─────────────────┘
+                                          
+                              │
                               ▼
-                    ┌───────────────────┐
-                    │   User Insights   │
-                    └───────────────────┘
+                    ┌────────────────────┐
+                    │    Gemini AI       │
+                    │   Audit Engine     │
+                    └─────────┬──────────┘
+                              │
+                              ▼
+                    ┌────────────────────┐
+                    │  User Insights &   │
+                    │  Recommendations   │
+                    └────────────────────┘
 ```
+
+---
+
+# 🚀 Current Product Capabilities
+
+SubSight AI currently provides:
+
+* Account creation
+* Secure login
+* Logout
+* Persistent cloud subscription storage
+* User-specific data isolation
+* Subscription CRUD
+* Renewal tracking
+* Financial dashboard
+* Interactive analytics
+* AI subscription auditing
+* Savings simulation
+* Portfolio insights
+* Demo data
+* CSV export
+* Gemini-powered recommendations
+* Streamlit Cloud deployment
 
 ---
 
@@ -731,15 +868,16 @@ This helps prevent invalid values from affecting financial calculations and visu
 
 Potential future improvements include:
 
-* Persistent cloud database
-* User authentication
-* Historical spending tracking
 * Automated renewal notifications
 * Subscription usage tracking
-* Bank statement integration
-* Advanced AI recommendations
-* Mobile-optimized experience
+* Historical spending comparisons
 * Email notification system
+* Bank statement integration
+* Subscription receipt scanning
+* Advanced AI financial forecasting
+* Mobile-optimized experience
+* Multi-currency analytics
+* Personalized monthly financial reports
 
 ---
 
@@ -759,12 +897,16 @@ See the `LICENSE` file for details.
 
 Built with:
 
-**Python · Streamlit · Pandas · Plotly · Google Gemini**
+**Python · Streamlit · Pandas · Plotly · Google Gemini · Supabase**
 
 ---
 
 <p align="center">
 
-**[🌐 Live App](https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/) · [💻 GitHub](https://github.com/KahkshanAnsari/Subsight.AI)**
+**🌐 Live App:**
+[https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/](https://subsightai-ee3yt5pw7l5sjybfzetbdq.streamlit.app/)
+
+**💻 GitHub:**
+[https://github.com/KahkshanAnsari/Subsight.AI](https://github.com/KahkshanAnsari/Subsight.AI)
 
 </p>
