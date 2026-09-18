@@ -2,7 +2,7 @@
 Supabase Service — Authentication and Persistent Storage for SubSight AI.
 
 All Supabase interactions are isolated here:
-  - Client initialization (lazy, from st.secrets)
+  - Client initialization (lazy, robust loading from st.secrets / env)
   - User authentication (sign up / sign in / sign out)
   - Subscription CRUD (insert / update / delete / fetch)
   - Bulk operations (demo data load, clear all)
@@ -18,55 +18,133 @@ Design principles:
 from __future__ import annotations
 
 import os
+import re
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 # ---------------------------------------------------------------------------
-# Client initialization
+# Client initialization & Credentials Handling
 # ---------------------------------------------------------------------------
 
-# Placeholder values that must be replaced before the app works
-_PLACEHOLDER_URLS = {"https://your-project-ref.supabase.co", ""}
-_PLACEHOLDER_KEY_PREFIXES = ("your-anon", "your-service", "placeholder")
+_PLACEHOLDER_PATTERNS = (
+    "your-project",
+    "your_project",
+    "placeholder",
+    "example",
+    "<project-ref>",
+    "<your-project-ref>",
+    "<anon-public-key>",
+    "<your-anon-key>",
+)
 
 
-def _load_credentials() -> tuple:
+def _load_credentials() -> Tuple[str, str, str]:
     """
-    Load SUPABASE_URL and SUPABASE_KEY from st.secrets or environment.
-    Returns (url, key, error_message).
-    error_message is empty string when credentials look valid.
-    """
-    url, key = "", ""
+    Load and validate SUPABASE_URL and SUPABASE_KEY from Streamlit secrets or environment.
+    Supports root-level keys, lowercase aliases, and nested [supabase] TOML sections.
 
+    Returns:
+        (url, key, error_message)
+        error_message is empty string ("") when credentials are valid.
+    """
+    url: str = ""
+    key: str = ""
+
+    # 1. Attempt loading from Streamlit secrets
     try:
         import streamlit as st
-        url = str(st.secrets.get("SUPABASE_URL", "")).strip()
-        key = str(st.secrets.get("SUPABASE_KEY", "")).strip()
+        # Check top-level keys with aliases
+        url = (
+            st.secrets.get("SUPABASE_URL")
+            or st.secrets.get("supabase_url")
+            or st.secrets.get("SUPABASE_PROJECT_URL")
+            or ""
+        )
+        key = (
+            st.secrets.get("SUPABASE_KEY")
+            or st.secrets.get("supabase_key")
+            or st.secrets.get("SUPABASE_ANON_KEY")
+            or st.secrets.get("supabase_anon_key")
+            or ""
+        )
+
+        # Check nested [supabase] section if present in secrets.toml
+        if not url or not key:
+            supabase_section = st.secrets.get("supabase") or st.secrets.get("SUPABASE") or {}
+            if isinstance(supabase_section, dict):
+                if not url:
+                    url = (
+                        supabase_section.get("SUPABASE_URL")
+                        or supabase_section.get("url")
+                        or supabase_section.get("URL")
+                        or ""
+                    )
+                if not key:
+                    key = (
+                        supabase_section.get("SUPABASE_KEY")
+                        or supabase_section.get("key")
+                        or supabase_section.get("KEY")
+                        or supabase_section.get("anon_key")
+                        or supabase_section.get("SUPABASE_ANON_KEY")
+                        or ""
+                    )
     except Exception:
         pass
 
-    # Fall back to environment variables
+    # 2. Fall back to environment variables
     if not url:
-        url = os.environ.get("SUPABASE_URL", "").strip()
+        url = (
+            os.environ.get("SUPABASE_URL")
+            or os.environ.get("supabase_url")
+            or os.environ.get("SUPABASE_PROJECT_URL")
+            or ""
+        )
     if not key:
-        key = os.environ.get("SUPABASE_KEY", "").strip()
+        key = (
+            os.environ.get("SUPABASE_KEY")
+            or os.environ.get("supabase_key")
+            or os.environ.get("SUPABASE_ANON_KEY")
+            or os.environ.get("supabase_anon_key")
+            or ""
+        )
 
-    # Check for placeholder / unconfigured values
-    if not url or url in _PLACEHOLDER_URLS:
+    # 3. Sanitize inputs (strip whitespace, surrounding quotes, and trailing slashes)
+    url = str(url).strip().strip("'\"").rstrip("/")
+    key = str(key).strip().strip("'\"")
+
+    # 4. Strict Validation
+    if not url:
         return "", "", (
-            "SUPABASE_URL is not configured. "
-            "Open .streamlit/secrets.toml and replace the placeholder with your "
-            "real Supabase Project URL (e.g. https://abcdefgh.supabase.co). "
-            "Find it at: Supabase Dashboard → Project Settings → API → Project URL."
+            "SUPABASE_URL is missing. Please configure SUPABASE_URL in your Streamlit Cloud Secrets "
+            "(or in .streamlit/secrets.toml for local development). "
+            "Example: SUPABASE_URL = \"https://xxxxxxxxxxxxxxxxxxxx.supabase.co\""
+        )
+
+    # Check for placeholder indicators or angle brackets
+    if "<" in url or ">" in url or any(p in url.lower() for p in _PLACEHOLDER_PATTERNS):
+        return "", "", (
+            f"SUPABASE_URL contains placeholder values ('{url}'). "
+            "Please replace it with your real Supabase Project URL from: "
+            "Supabase Dashboard → Project Settings → API → Project URL."
         )
 
     if not url.startswith("https://"):
-        return "", "", "SUPABASE_URL must start with https://"
-
-    if not key or any(key.lower().startswith(p) for p in _PLACEHOLDER_KEY_PREFIXES):
         return "", "", (
-            "SUPABASE_KEY is not configured. "
-            "Open .streamlit/secrets.toml and add your Supabase anon/public key."
+            f"SUPABASE_URL must start with 'https://' (got: '{url}'). "
+            "Example: https://xxxxxxxxxxxxxxxxxxxx.supabase.co"
+        )
+
+    if not key:
+        return "", "", (
+            "SUPABASE_KEY is missing. Please configure SUPABASE_KEY in your Streamlit Cloud Secrets "
+            "(or in .streamlit/secrets.toml for local development). "
+            "Find it in Supabase Dashboard → Project Settings → API → Project API Keys (anon/public)."
+        )
+
+    if "<" in key or ">" in key or any(key.lower().startswith(p) for p in ("your-anon", "your-service", "placeholder")):
+        return "", "", (
+            "SUPABASE_KEY contains a placeholder value. "
+            "Please copy your actual Supabase 'anon' public key from Project Settings → API."
         )
 
     return url, key, ""
@@ -75,7 +153,7 @@ def _load_credentials() -> tuple:
 def get_supabase_client():
     """
     Lazy-initialize and return a Supabase client.
-    Returns None if credentials are missing or are placeholders.
+    Returns None if credentials are missing or invalid.
     """
     url, key, err = _load_credentials()
     if err or not url or not key:
@@ -107,14 +185,13 @@ def sign_up(email: str, password: str, display_name: str = "") -> Tuple[bool, Op
         (True, user_dict, "") on success
         (False, None, error_message) on failure
     """
-    # Check credentials before attempting network call
     url, key, cred_err = _load_credentials()
     if cred_err:
         return False, None, cred_err
 
     client = get_supabase_client()
     if client is None:
-        return False, None, "Could not connect to Supabase. Please verify your SUPABASE_URL and SUPABASE_KEY."
+        return False, None, "Could not initialize Supabase client. Please check SUPABASE_URL and SUPABASE_KEY."
 
     try:
         metadata: Dict[str, Any] = {}
@@ -150,14 +227,13 @@ def sign_in(email: str, password: str) -> Tuple[bool, Optional[Dict], str]:
         (True, user_dict, "") on success
         (False, None, error_message) on failure
     """
-    # Check credentials before attempting network call
     url, key, cred_err = _load_credentials()
     if cred_err:
         return False, None, cred_err
 
     client = get_supabase_client()
     if client is None:
-        return False, None, "Could not connect to Supabase. Please verify your SUPABASE_URL and SUPABASE_KEY."
+        return False, None, "Could not initialize Supabase client. Please check SUPABASE_URL and SUPABASE_KEY."
 
     try:
         response = client.auth.sign_in_with_password({
@@ -191,8 +267,8 @@ def sign_out(access_token: str = "") -> Tuple[bool, str]:
     try:
         client.auth.sign_out()
         return True, ""
-    except Exception as exc:
-        # Even if sign-out fails on server, we still clear local state
+    except Exception:
+        # Even if sign-out fails on server, clear local state
         return True, ""
 
 
@@ -356,7 +432,6 @@ def _get_authed_client(access_token: str):
 
     if access_token:
         try:
-            # Set auth header so PostgREST sends the user's JWT
             client.postgrest.auth(access_token)
         except Exception:
             pass
@@ -399,13 +474,10 @@ def _extract_user_dict(user, session) -> Dict[str, Any]:
 def _map_db_row_to_sub_dict(row: Dict) -> Dict:
     """
     Convert a Supabase subscriptions table row to the app's internal subscription dict format.
-    The app uses: id, service, category, price, currency, billing_cycle, renewal_date, status, created_at
-    The DB uses:  id, user_id, name, category, price, currency, billing_cycle, renewal_date, status, created_at, updated_at
     """
     renewal = row.get("renewal_date") or ""
     created = row.get("created_at") or ""
 
-    # Normalize date strings (DB may return ISO datetime; app expects YYYY-MM-DD)
     renewal = _normalize_date_str(renewal)
     created = _normalize_date_str(created)
 
@@ -453,10 +525,8 @@ def _normalize_date_str(value: str) -> str:
     if not value:
         return date.today().isoformat()
     try:
-        # Already YYYY-MM-DD
         if len(value) == 10 and value[4] == "-":
             return value
-        # ISO datetime with T separator
         parsed = datetime.fromisoformat(value[:19])
         return parsed.strftime("%Y-%m-%d")
     except Exception:
@@ -468,8 +538,7 @@ def _friendly_auth_error(raw: str, include_raw: bool = False) -> str:
     Map raw Supabase auth error strings to user-friendly messages.
 
     When include_raw=True the real error is appended in parentheses so
-    misconfigurations are always visible during development — without
-    exposing API keys or secrets.
+    misconfigurations or paused project states are visible without exposing secrets.
     """
     r = raw.lower()
 
@@ -478,7 +547,7 @@ def _friendly_auth_error(raw: str, include_raw: bool = False) -> str:
             return f"{friendly} (Supabase: {raw})"
         return friendly
 
-    # Connection / URL problems — must check BEFORE generic "invalid" check
+    # Hostname / DNS / Connection failures (e.g. project paused, invalid URL ref, network down)
     if (
         "name or service not known" in r
         or "getaddrinfo failed" in r
@@ -486,15 +555,20 @@ def _friendly_auth_error(raw: str, include_raw: bool = False) -> str:
         or "connection refused" in r
         or "max retries exceeded" in r
         or "nodename nor servname" in r
-        or "timeout" in r
-        or "timed out" in r
+        or "cannot resolve" in r
     ):
         return _msg(
-            "Cannot reach Supabase. Please check that SUPABASE_URL is correct "
-            "and your internet connection is working."
+            "Cannot connect to Supabase host. "
+            "Please check: (1) If your Supabase free-tier project is PAUSED due to inactivity, "
+            "log in to Supabase Dashboard and click 'Restore project'; "
+            "(2) Verify that SUPABASE_URL in Streamlit Cloud Secrets exactly matches your project URL."
         )
 
-    # Wrong email / password — deliberately specific patterns to avoid false positives
+    # Timeouts
+    if "timeout" in r or "timed out" in r:
+        return _msg("Connection to Supabase timed out. Please check your internet connection and try again.")
+
+    # Wrong email / password
     if "invalid login credentials" in r or "invalid credentials" in r:
         return _msg("Invalid email or password. Please try again.")
 
@@ -518,9 +592,8 @@ def _friendly_auth_error(raw: str, include_raw: bool = False) -> str:
     if "network" in r or "connection" in r:
         return _msg("Network error. Please check your connection and try again.")
 
-    # Catch-all — always show raw in development so the real problem is visible
-    return _msg(f"Authentication error. Details: {raw}")
-
+    # Catch-all
+    return _msg(f"Authentication error: {raw}")
 
 
 def _friendly_db_error(raw: str) -> str:
@@ -528,8 +601,8 @@ def _friendly_db_error(raw: str) -> str:
     r = raw.lower()
     if "jwt" in r or "token" in r or "unauthorized" in r or "401" in r:
         return "Your session has expired. Please log in again."
-    if "network" in r or "connection" in r or "timeout" in r:
-        return "Database connection error. Please try again."
+    if "network" in r or "connection" in r or "timeout" in r or "name or service not known" in r or "getaddrinfo" in r:
+        return "Database connection error. Your Supabase project may be paused or unreachable."
     if "duplicate" in r or "unique" in r or "already exists" in r:
         return "This record already exists."
     return "A database error occurred. Please try again."
